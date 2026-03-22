@@ -59,7 +59,10 @@
 		/* Hero Section */
 		.hero {
 			min-height: 100vh;
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+			background: linear-gradient(rgba(102, 126, 234, 0.85), rgba(118, 75, 162, 0.85), rgba(240, 147, 251, 0.85)), url('assets/BIBI(59).jpg');
+			background-size: cover;
+			background-position: center;
+			background-attachment: fixed;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -254,65 +257,206 @@
 			font-size: 1.05em;
 		}
 		
-		/* Photo Gallery */
+		/* Photo Gallery Slider */
 		.gallery {
 			background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
 			text-align: center;
 		}
 		
-		.photo-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-			gap: 20px;
-			margin-top: 50px;
+		.photo-slider-container {
+			position: relative;
+			max-width: 1200px;
+			margin: 50px auto 0;
+			padding: 0 60px;
 		}
 		
-		.photo-item {
+		.photo-slider {
 			position: relative;
 			overflow: hidden;
-			border-radius: 15px;
-			aspect-ratio: 1;
-			box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-			transition: transform 0.4s ease, box-shadow 0.4s ease;
+			border-radius: 20px;
+			box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+		}
+		
+		.photo-track {
+			display: flex;
+			transition: transform 0.5s ease-in-out;
+		}
+		
+		.photo-slide {
+			min-width: 100%;
+			position: relative;
 			cursor: pointer;
 		}
 		
-		.photo-item:hover {
-			transform: scale(1.05) rotate(2deg);
-			box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-		}
-		
-		.photo-item img {
+		.photo-slide img {
 			width: 100%;
-			height: 100%;
+			height: 500px;
 			object-fit: cover;
-			transition: transform 0.4s ease;
+			display: block;
 		}
 		
-		.photo-item:hover img {
-			transform: scale(1.1);
+		.slider-btn {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			background: rgba(255,255,255,0.9);
+			border: none;
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			font-size: 24px;
+			cursor: pointer;
+			z-index: 10;
+			transition: all 0.3s ease;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 		}
 		
-		.photo-overlay {
+		.slider-btn:hover {
+			background: white;
+			transform: translateY(-50%) scale(1.1);
+			box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+		}
+		
+		.slider-btn.prev {
+			left: 10px;
+		}
+		
+		.slider-btn.next {
+			right: 10px;
+		}
+		
+		.slider-dots {
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			margin-top: 30px;
+			flex-wrap: wrap;
+		}
+		
+		.dot {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.5);
+			border: 2px solid rgba(255,255,255,0.8);
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.dot.active {
+			background: #ff6b9d;
+			border-color: #ff6b9d;
+			transform: scale(1.3);
+		}
+		
+		.photo-caption {
 			position: absolute;
 			bottom: 0;
 			left: 0;
 			right: 0;
-			background: linear-gradient(transparent, rgba(0,0,0,0.7));
-			padding: 20px;
-			transform: translateY(100%);
-			transition: transform 0.3s ease;
-		}
-		
-		.photo-item:hover .photo-overlay {
-			transform: translateY(0);
-		}
-		
-		.photo-overlay p {
+			background: linear-gradient(transparent, rgba(0,0,0,0.8));
 			color: white;
+			padding: 40px 20px 20px;
 			font-family: 'Dancing Script', cursive;
-			font-size: 1.2em;
-			margin: 0;
+			font-size: 1.5em;
+			text-align: center;
+		}
+		
+		/* Lightbox Modal */
+		.lightbox {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.95);
+			z-index: 10000;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.lightbox.active {
+			display: flex;
+		}
+		
+		.lightbox-nav {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			background: rgba(255,255,255,0.9);
+			border: none;
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			font-size: 30px;
+			cursor: pointer;
+			z-index: 10002;
+			transition: all 0.3s ease;
+			color: #2d3436;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.lightbox-nav:hover {
+			background: #ff6b9d;
+			color: white;
+			transform: translateY(-50%) scale(1.15);
+			box-shadow: 0 8px 25px rgba(255,107,157,0.5);
+		}
+		
+		.lightbox-nav.prev {
+			left: 30px;
+		}
+		
+		.lightbox-nav.next {
+			right: 30px;
+		}
+		
+		.lightbox-content {
+			position: relative;
+			max-width: 90%;
+			max-height: 90%;
+		}
+		
+		.lightbox-content img {
+			max-width: 100%;
+			max-height: 90vh;
+			object-fit: contain;
+			border-radius: 10px;
+		}
+		
+		.lightbox-close {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			background: white;
+			border: none;
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			font-size: 24px;
+			cursor: pointer;
+			z-index: 10001;
+			transition: all 0.3s ease;
+		}
+		
+		.lightbox-close:hover {
+			background: #ff6b9d;
+			color: white;
+			transform: scale(1.1);
+		}
+		
+		.lightbox-caption {
+			position: absolute;
+			bottom: -50px;
+			left: 0;
+			right: 0;
+			color: white;
+			text-align: center;
+			font-family: 'Dancing Script', cursive;
+			font-size: 1.5em;
 		}
 		
 		/* Message Section */
@@ -434,6 +578,20 @@
 				width: 35px;
 				height: 50px;
 			}
+			
+			.lightbox-nav {
+				width: 50px;
+				height: 50px;
+				font-size: 24px;
+			}
+			
+			.lightbox-nav.prev {
+				left: 10px;
+			}
+			
+			.lightbox-nav.next {
+				right: 10px;
+			}
 		}
 	</style>
 </head>
@@ -451,7 +609,7 @@
 				<div class="balloon"></div>
 				<div class="balloon"></div>
 			</div>
-			<h1>Happy Birthday, My Beautiful Wife!</h1>
+			<h1>Happy Birthday, My Love!</h1>
 			<div class="heart-pulse">❤️</div>
 			<p class="hero-subtitle">To the Love of My Life</p>
 		</div>
@@ -488,114 +646,290 @@
 		</div>
 	</section>
 	
-	<!-- Photo Gallery -->
+	<!-- Photo Gallery Slider -->
 	<section class="section gallery">
 		<h2 class="section-title">Our Beautiful Memories</h2>
-		<div class="photo-grid">
-			<div class="photo-item">
-				<img src="assets/BIBI(7).jpg" alt="Beautiful Moment">
-				<div class="photo-overlay">
-					<p>Forever in my heart</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(11).jpg" alt="Special Memory">
-				<div class="photo-overlay">
-					<p>Love captured</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(12).jpg" alt="Sweet Memory">
-				<div class="photo-overlay">
-					<p>Precious moments</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(19).jpg" alt="Joyful Time">
-				<div class="photo-overlay">
-					<p>Pure happiness</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(25).jpg" alt="Lovely Moment">
-				<div class="photo-overlay">
-					<p>My beautiful wife</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(43).jpg" alt="Special Day">
-				<div class="photo-overlay">
-					<p>Always and forever</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(46).jpg" alt="Wonderful Memory">
-				<div class="photo-overlay">
-					<p>Cherished memories</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(52).jpg" alt="Beautiful Time">
-				<div class="photo-overlay">
-					<p>Love of my life</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(59).jpg" alt="Happy Moment">
-				<div class="photo-overlay">
-					<p>My everything</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(71) (1).jpg" alt="Precious Time">
-				<div class="photo-overlay">
-					<p>Together forever</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(74).jpg" alt="Sweet Memory">
-				<div class="photo-overlay">
-					<p>You and me</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(81).jpg" alt="Loving Moment">
-				<div class="photo-overlay">
-					<p>Perfect together</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(90).jpg" alt="Beautiful Day">
-				<div class="photo-overlay">
-					<p>My soulmate</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(93).jpg" alt="Special Memory">
-				<div class="photo-overlay">
-					<p>Endless love</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(95).jpg" alt="Joyful Memory">
-				<div class="photo-overlay">
-					<p>My queen</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(100).jpg" alt="Wonderful Time">
-				<div class="photo-overlay">
-					<p>Forever yours</p>
-				</div>
-			</div>
-			<div class="photo-item">
-				<img src="assets/BIBI(102).jpg" alt="Lovely Memory">
-				<div class="photo-overlay">
-					<p>My heart</p>
-				</div>
-			</div>
+		<div class="photo-slider-container">
+			<div class="photo-slider">
+				<button class="slider-btn prev" onclick="moveSlide(-1)">‹</button>
+				<button class="slider-btn next" onclick="moveSlide(1)">›</button>
+				<div class="photo-track">
+					<div class="photo-slide" onclick="openLightbox(0)">
+						<img src="assets/23.jpeg" alt="Memory">
+						<div class="photo-caption">My beautiful love</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(1)">
+						<img src="assets/BIBI(59).jpg" alt="Memory">
+						<div class="photo-caption">My everything</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(2)">
+						<img src="assets/8.jpeg" alt="Memory">
+						<div class="photo-caption">Pure joy</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(3)">
+						<img src="assets/31.jpeg" alt="Memory">
+						<div class="photo-caption">Endless love</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(4)">
+						<img src="assets/BIBI(93).jpg" alt="Memory">
+						<div class="photo-caption">Endless love</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(5)">
+						<img src="assets/14.jpeg" alt="Memory">
+						<div class="photo-caption">Together forever</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(6)">
+						<img src="assets/BIBI(25).jpg" alt="Memory">
+						<div class="photo-caption">My beautiful wife</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(7)">
+						<img src="assets/42.jpeg" alt="Memory">
+						<div class="photo-caption">Forever and always</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(8)">
+						<img src="assets/5.jpeg" alt="Memory">
+						<div class="photo-caption">Precious moments</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(9)">
+						<img src="assets/BIBI(7).jpg" alt="Memory">
+						<div class="photo-caption">Forever in my heart</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(10)">
+						<img src="assets/27.jpeg" alt="Memory">
+						<div class="photo-caption">Love of my life</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(11)">
+						<img src="assets/BIBI(102).jpg" alt="Memory">
+						<div class="photo-caption">My heart</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(12)">
+						<img src="assets/19.jpeg" alt="Memory">
+						<div class="photo-caption">Perfect together</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(13)">
+						<img src="assets/BIBI(43).jpg" alt="Memory">
+						<div class="photo-caption">Always and forever</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(14)">
+						<img src="assets/11.jpeg" alt="Memory">
+						<div class="photo-caption">My soulmate</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(15)">
+						<img src="assets/38.jpeg" alt="Memory">
+						<div class="photo-caption">You complete me</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(16)">
+						<img src="assets/BIBI(11).jpg" alt="Memory">
+						<div class="photo-caption">Love captured</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(17)">
+						<img src="assets/3.jpeg" alt="Memory">
+						<div class="photo-caption">Beautiful memories</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(18)">
+						<img src="assets/BIBI(74).jpg" alt="Memory">
+						<div class="photo-caption">You and me</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(19)">
+						<img src="assets/29.jpeg" alt="Memory">
+						<div class="photo-caption">My queen</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(20)">
+						<img src="assets/16.jpeg" alt="Memory">
+						<div class="photo-caption">Forever yours</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(21)">
+						<img src="assets/BIBI(90).jpg" alt="Memory">
+						<div class="photo-caption">My soulmate</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(22)">
+						<img src="assets/7.jpeg" alt="Memory">
+						<div class="photo-caption">Pure happiness</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(23)">
+						<img src="assets/33.jpeg" alt="Memory">
+						<div class="photo-caption">Cherished memories</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(24)">
+						<img src="assets/BIBI(52).jpg" alt="Memory">
+						<div class="photo-caption">Love of my life</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(25)">
+						<img src="assets/21.jpeg" alt="Memory">
+						<div class="photo-caption">My treasure</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(26)">
+						<img src="assets/BIBI(12).jpg" alt="Memory">
+						<div class="photo-caption">Precious moments</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(27)">
+						<img src="assets/44.jpeg" alt="Memory">
+						<div class="photo-caption">My angel</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(28)">
+						<img src="assets/10.jpeg" alt="Memory">
+						<div class="photo-caption">Sweet love</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(29)">
+						<img src="assets/BIBI(81).jpg" alt="Memory">
+						<div class="photo-caption">Perfect together</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(30)">
+						<img src="assets/35.jpeg" alt="Memory">
+						<div class="photo-caption">My sunshine</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(31)">
+						<img src="assets/2.jpeg" alt="Memory">
+						<div class="photo-caption">Beautiful soul</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(32)">
+						<img src="assets/BIBI(95).jpg" alt="Memory">
+						<div class="photo-caption">My queen</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(33)">
+						<img src="assets/25.jpeg" alt="Memory">
+						<div class="photo-caption">Forever love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(34)">
+						<img src="assets/13.jpeg" alt="Memory">
+						<div class="photo-caption">My heartbeat</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(35)">
+						<img src="assets/BIBI(19).jpg" alt="Memory">
+						<div class="photo-caption">Pure happiness</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(36)">
+						<img src="assets/39.jpeg" alt="Memory">
+						<div class="photo-caption">Amazing moments</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(37)">
+						<img src="assets/WhatsApp Image 2026-03-22 at 04.06.41 (2).jpeg" alt="Memory">
+						<div class="photo-caption">Special moments</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(38)">
+						<img src="assets/6.jpeg" alt="Memory">
+						<div class="photo-caption">My everything</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(39)">
+						<img src="assets/BIBI(46).jpg" alt="Memory">
+						<div class="photo-caption">Cherished memories</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(40)">
+						<img src="assets/28.jpeg" alt="Memory">
+						<div class="photo-caption">Love eternal</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(41)">
+						<img src="assets/17.jpeg" alt="Memory">
+						<div class="photo-caption">My beloved</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(42)">
+						<img src="assets/BIBI(100).jpg" alt="Memory">
+						<div class="photo-caption">Forever yours</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(43)">
+						<img src="assets/40.jpeg" alt="Memory">
+						<div class="photo-caption">Magical moments</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(44)">
+						<img src="assets/1.jpeg" alt="Memory">
+						<div class="photo-caption">Beautiful you</div>
+					</div>
+					<!-- <div class="photo-slide" onclick="openLightbox(45)">
+						<img src="assets/BIBI(71) (1).jpg" alt="Memory">
+						<div class="photo-caption">Together forever</div>
+					</div> -->
+					<div class="photo-slide" onclick="openLightbox(46)">
+						<img src="assets/32.jpeg" alt="Memory">
+						<div class="photo-caption">My princess</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(47)">
+						<img src="assets/9.jpeg" alt="Memory">
+						<div class="photo-caption">Wonderful you</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(48)">
+						<img src="assets/24.jpeg" alt="Memory">
+						<div class="photo-caption">Sweet memories</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(49)">
+						<img src="assets/46.jpeg" alt="Memory">
+						<div class="photo-caption">Love divine</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(50)">
+						<img src="assets/WhatsApp Image 2026-03-22 at 04.06.44 (3).jpeg" alt="Memory">
+						<div class="photo-caption">Precious you</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(51)">
+						<img src="assets/15.jpeg" alt="Memory">
+						<div class="photo-caption">My world</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(52)">
+						<img src="assets/37.jpeg" alt="Memory">
+						<div class="photo-caption">Pure love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(53)">
+						<img src="assets/4.jpeg" alt="Memory">
+						<div class="photo-caption">Lovely you</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(54)">
+						<img src="assets/22.jpeg" alt="Memory">
+						<div class="photo-caption">My dream</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(55)">
+						<img src="assets/30.jpeg" alt="Memory">
+						<div class="photo-caption">Beautiful love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(56)">
+						<img src="assets/12.jpeg" alt="Memory">
+						<div class="photo-caption">My star</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(57)">
+						<img src="assets/41.jpeg" alt="Memory">
+						<div class="photo-caption">Eternal love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(58)">
+						<img src="assets/20.jpeg" alt="Memory">
+						<div class="photo-caption">My happiness</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(59)">
+						<img src="assets/34.jpeg" alt="Memory">
+						<div class="photo-caption">Sweet love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(60)">
+						<img src="assets/26.jpeg" alt="Memory">
+						<div class="photo-caption">My blessing</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(61)">
+						<img src="assets/18.jpeg" alt="Memory">
+						<div class="photo-caption">True love</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(62)">
+						<img src="assets/36.jpeg" alt="Memory">
+						<div class="photo-caption">My joy</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(63)">
+						<img src="assets/43.jpeg" alt="Memory">
+						<div class="photo-caption">Forever together</div>
+					</div>
+					<div class="photo-slide" onclick="openLightbox(64)">
+						<img src="assets/47.jpeg" alt="Memory">
+						<div class="photo-caption">Always yours</div>
+					</div>
 		</div>
-	</section>
+	</div>
+	<div class="slider-dots" id="sliderDots"></div>
+</div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="lightbox" id="lightbox">
+	<button class="lightbox-close" onclick="closeLightbox()">×</button>
+	<button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
+	<button class="lightbox-nav next" onclick="navigateLightbox(1)">›</button>
+	<div class="lightbox-content">
+		<img id="lightboxImage" src="" alt="">
+		<div class="lightbox-caption" id="lightboxCaption"></div>
+	</div>
+</div>
 	
 	<!-- Personal Message -->
 	<section class="section message">
@@ -652,9 +986,109 @@
 		<p>Forever and Always, My Love</p>
 		<div class="hearts">❤️ 💕 💖 💗 💝</div>
 		<p style="margin-top: 20px; font-size: 1em; font-family: 'Montserrat', sans-serif;">Happy Birthday, Beautiful! 🎂</p>
+		<p style="margin-top: 15px; font-size: 1.2em; font-family: 'Great Vibes', cursive;">With Love ❤️, Your Husband</p>
 	</footer>
 	
+	<!-- Background Music -->
+	<audio id="backgroundMusic" autoplay loop preload="auto" muted>
+		<source src="sound.mp3" type="audio/mpeg">
+		Your browser does not support the audio element.
+	</audio>
+	
+	<!-- Click to Start Overlay -->
+	<div id="clickToStart" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px);">
+		<div style="text-align: center; color: white;">
+			<div style="font-size: 4em; margin-bottom: 20px; animation: bounce 1s infinite;">🎵</div>
+			<h2 style="font-family: 'Great Vibes', cursive; font-size: 3em; margin-bottom: 10px;">Click Anywhere to Start</h2>
+			<p style="font-family: 'Montserrat', sans-serif; font-size: 1.2em;">Experience the magic with music 🎶</p>
+		</div>
+	</div>
+	
+	<style>
+		@keyframes bounce {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-20px); }
+		}
+	</style>
+	
+	<!-- Music Control Button -->
+	<div id="musicControl" style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; background: linear-gradient(135deg, #ff6b9d, #f093fb); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;">
+		<span id="musicIcon" style="font-size: 24px; color: white;">🎵</span>
+	</div>
+	
 	<script>
+		// Background Music Controls - Start on first interaction
+		const music = document.getElementById('backgroundMusic');
+		const musicControl = document.getElementById('musicControl');
+		const musicIcon = document.getElementById('musicIcon');
+		const clickToStart = document.getElementById('clickToStart');
+		let isPlaying = false;
+		let musicStarted = false;
+		
+		// Set volume
+		music.volume = 0.5;
+		
+		// Try to autoplay immediately (will likely be muted by browser)
+		music.play().catch(() => {});
+		
+		// Function to start music with user interaction
+		const startMusic = () => {
+			if (!musicStarted) {
+				musicStarted = true;
+				music.muted = false; // Unmute the audio
+				music.volume = 0.5;
+				music.play().then(() => {
+					isPlaying = true;
+					musicIcon.textContent = '🔊';
+					// Hide the overlay
+					clickToStart.style.opacity = '0';
+					clickToStart.style.transition = 'opacity 0.5s ease';
+					setTimeout(() => {
+						clickToStart.style.display = 'none';
+					}, 500);
+				}).catch((error) => {
+					console.log('Playback failed:', error);
+					musicIcon.textContent = '🎵';
+				});
+			}
+		};
+		
+		// Start music when overlay is clicked
+		clickToStart.addEventListener('click', startMusic);
+		
+		// Also start on any interaction just in case
+		document.addEventListener('keydown', startMusic, { once: true });
+		document.addEventListener('touchstart', startMusic, { once: true });
+		
+		// Toggle music on button click
+		musicControl.addEventListener('click', (e) => {
+			e.stopPropagation();
+			if (!musicStarted) {
+				startMusic();
+				return;
+			}
+			
+			if (isPlaying) {
+				music.pause();
+				musicIcon.textContent = '🔇';
+				isPlaying = false;
+			} else {
+				music.play().then(() => {
+					musicIcon.textContent = '🔊';
+					isPlaying = true;
+				}).catch(() => {});
+			}
+		});
+		
+		// Hover effect for music control
+		musicControl.addEventListener('mouseenter', () => {
+			musicControl.style.transform = 'scale(1.1)';
+		});
+		
+		musicControl.addEventListener('mouseleave', () => {
+			musicControl.style.transform = 'scale(1)';
+		});
+		
 		// Create floating hearts
 		const heartsContainer = document.getElementById('heartsContainer');
 		function createHeart() {
@@ -693,5 +1127,6 @@
 			});
 		});
 	</script>
+<script src="slider.js"></script>
 </body>
 </html>
