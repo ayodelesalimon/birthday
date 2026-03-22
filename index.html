@@ -1017,113 +1017,130 @@
 	</div>
 	
 	<script>
-		// Background Music Controls - Start on first interaction
-		const music = document.getElementById('backgroundMusic');
-		const musicControl = document.getElementById('musicControl');
-		const musicIcon = document.getElementById('musicIcon');
-		const clickToStart = document.getElementById('clickToStart');
-		let isPlaying = false;
-		let musicStarted = false;
-		
-		// Set volume
-		music.volume = 0.5;
-		
-		// Try to autoplay immediately (will likely be muted by browser)
-		music.play().catch(() => {});
-		
-		// Function to start music with user interaction
-		const startMusic = () => {
-			if (!musicStarted) {
-				musicStarted = true;
-				music.muted = false; // Unmute the audio
-				music.volume = 0.5;
-				music.play().then(() => {
-					isPlaying = true;
-					musicIcon.textContent = '🔊';
-					// Hide the overlay
+		// Wait for DOM to be fully loaded
+		document.addEventListener('DOMContentLoaded', function() {
+			// Background Music Controls - Start on first interaction
+			const music = document.getElementById('backgroundMusic');
+			const musicControl = document.getElementById('musicControl');
+			const musicIcon = document.getElementById('musicIcon');
+			const clickToStart = document.getElementById('clickToStart');
+			let isPlaying = false;
+			let musicStarted = false;
+			
+			// Set volume
+			music.volume = 0.5;
+			
+			// Function to start music and hide overlay
+			const startMusic = (e) => {
+				if (e) e.preventDefault();
+				
+				if (!musicStarted) {
+					musicStarted = true;
+					
+					// Hide the overlay immediately
 					clickToStart.style.opacity = '0';
-					clickToStart.style.transition = 'opacity 0.5s ease';
+					clickToStart.style.transition = 'opacity 0.3s ease';
 					setTimeout(() => {
 						clickToStart.style.display = 'none';
-					}, 500);
-				}).catch((error) => {
-					console.log('Playback failed:', error);
-					musicIcon.textContent = '🎵';
-				});
-			}
-		};
-		
-		// Start music when overlay is clicked
-		clickToStart.addEventListener('click', startMusic);
-		
-		// Also start on any interaction just in case
-		document.addEventListener('keydown', startMusic, { once: true });
-		document.addEventListener('touchstart', startMusic, { once: true });
-		
-		// Toggle music on button click
-		musicControl.addEventListener('click', (e) => {
-			e.stopPropagation();
-			if (!musicStarted) {
-				startMusic();
-				return;
-			}
-			
-			if (isPlaying) {
-				music.pause();
-				musicIcon.textContent = '🔇';
-				isPlaying = false;
-			} else {
-				music.play().then(() => {
-					musicIcon.textContent = '🔊';
-					isPlaying = true;
-				}).catch(() => {});
-			}
-		});
-		
-		// Hover effect for music control
-		musicControl.addEventListener('mouseenter', () => {
-			musicControl.style.transform = 'scale(1.1)';
-		});
-		
-		musicControl.addEventListener('mouseleave', () => {
-			musicControl.style.transform = 'scale(1)';
-		});
-		
-		// Create floating hearts
-		const heartsContainer = document.getElementById('heartsContainer');
-		function createHeart() {
-			const heart = document.createElement('div');
-			heart.className = 'heart-float';
-			heart.innerHTML = '❤️';
-			heart.style.left = Math.random() * 100 + '%';
-			heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
-			heart.style.animationDelay = Math.random() * 5 + 's';
-			heartsContainer.appendChild(heart);
-			
-			setTimeout(() => {
-				heart.remove();
-			}, 20000);
-		}
-		
-		// Create initial hearts
-		for (let i = 0; i < 15; i++) {
-			setTimeout(createHeart, i * 1000);
-		}
-		
-		// Continue creating hearts
-		setInterval(createHeart, 2000);
-		
-		// Smooth scroll for any future navigation
-		document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-			anchor.addEventListener('click', function (e) {
-				e.preventDefault();
-				const target = document.querySelector(this.getAttribute('href'));
-				if (target) {
-					target.scrollIntoView({
-						behavior: 'smooth',
-						block: 'start'
+					}, 300);
+					
+					// Start the music
+					music.muted = false;
+					music.volume = 0.5;
+					music.play().then(() => {
+						isPlaying = true;
+						musicIcon.textContent = '🔊';
+					}).catch((error) => {
+						console.log('Music autoplay blocked, but overlay removed');
+						musicIcon.textContent = '🎵';
+						// Even if music fails, overlay is already hidden
 					});
 				}
+			};
+			
+			// Multiple ways to start - overlay click
+			if (clickToStart) {
+				clickToStart.addEventListener('click', startMusic);
+				clickToStart.addEventListener('touchstart', startMusic);
+			}
+			
+			// Also start on any key press
+			document.addEventListener('keydown', function(e) {
+				if (!musicStarted) startMusic(e);
+			}, { once: true });
+			
+			// Toggle music on button click
+			if (musicControl) {
+				musicControl.addEventListener('click', (e) => {
+					e.stopPropagation();
+					
+					// If music hasn't started yet, start it and hide overlay
+					if (!musicStarted) {
+						startMusic(e);
+						return;
+					}
+					
+					// Toggle play/pause
+					if (isPlaying) {
+						music.pause();
+						musicIcon.textContent = '🔇';
+						isPlaying = false;
+					} else {
+						music.play().then(() => {
+							musicIcon.textContent = '🔊';
+							isPlaying = true;
+						}).catch(() => {
+							musicIcon.textContent = '🎵';
+						});
+					}
+				});
+				
+				// Hover effect for music control
+				musicControl.addEventListener('mouseenter', () => {
+					musicControl.style.transform = 'scale(1.1)';
+				});
+				
+				musicControl.addEventListener('mouseleave', () => {
+					musicControl.style.transform = 'scale(1)';
+				});
+			}
+			
+			// Create floating hearts
+			const heartsContainer = document.getElementById('heartsContainer');
+			function createHeart() {
+				const heart = document.createElement('div');
+				heart.className = 'heart-float';
+				heart.innerHTML = '❤️';
+				heart.style.left = Math.random() * 100 + '%';
+				heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
+				heart.style.animationDelay = Math.random() * 5 + 's';
+				heartsContainer.appendChild(heart);
+				
+				setTimeout(() => {
+					heart.remove();
+				}, 20000);
+			}
+			
+			// Create initial hearts
+			for (let i = 0; i < 15; i++) {
+				setTimeout(createHeart, i * 1000);
+			}
+			
+			// Continue creating hearts
+			setInterval(createHeart, 2000);
+			
+			// Smooth scroll for any future navigation
+			document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+				anchor.addEventListener('click', function (e) {
+					e.preventDefault();
+					const target = document.querySelector(this.getAttribute('href'));
+					if (target) {
+						target.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start'
+						});
+					}
+				});
 			});
 		});
 	</script>
