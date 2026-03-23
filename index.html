@@ -4,923 +4,962 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Happy Birthday, My Love!</title>
-	<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
+		:root {
+			--gold: #f5c842;
+			--gold-light: #fde88a;
+			--gold-dark: #c8962a;
+			--rose: #e8637a;
+			--rose-light: #f4a0b0;
+			--rose-dark: #b83a52;
+			--cream: #fdf6ec;
+			--deep: #1a0a14;
+			--deep2: #2d1424;
+			--text-light: #fdf0e8;
+			--text-muted: #d4a0b0;
 		}
-		
+
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+
+		html { scroll-behavior: smooth; }
+
 		body {
-			margin: 0;
-			padding: 0;
-			font-family: 'Montserrat', sans-serif;
+			font-family: 'Lato', sans-serif;
+			background: var(--deep);
+			color: var(--text-light);
 			overflow-x: hidden;
-			background: #0f0c29;
+			cursor: default;
 		}
-		
-		/* Floating hearts background */
-		.hearts-bg {
+
+		/* ─── CONFETTI CANVAS ─── */
+		#confetti-canvas {
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-			z-index: 0;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
 			pointer-events: none;
+			z-index: 9998;
 		}
-		
-		.heart-float {
+
+		/* ─── FLOATING PETALS ─── */
+		.petals-bg {
+			position: fixed;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			pointer-events: none;
+			z-index: 1;
+			overflow: hidden;
+		}
+		.petal {
 			position: absolute;
-			font-size: 20px;
-			color: rgba(255, 182, 193, 0.3);
-			animation: floatUp 15s infinite;
+			width: 14px; height: 14px;
+			border-radius: 50% 0 50% 0;
+			opacity: 0;
+			animation: petalFall linear infinite;
 		}
-		
-		@keyframes floatUp {
-			0% {
-				transform: translateY(100vh) rotate(0deg);
-				opacity: 0;
-			}
-			10% {
-				opacity: 1;
-			}
-			90% {
-				opacity: 1;
-			}
-			100% {
-				transform: translateY(-100vh) rotate(360deg);
-				opacity: 0;
-			}
+		@keyframes petalFall {
+			0%   { transform: translateY(-60px) rotate(0deg); opacity: 0; }
+			10%  { opacity: 0.6; }
+			90%  { opacity: 0.4; }
+			100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 		}
-		
-		/* Hero Section */
-		.hero {
-			min-height: 100vh;
-			background: linear-gradient(rgba(102, 126, 234, 0.85), rgba(118, 75, 162, 0.85), rgba(240, 147, 251, 0.85)), url('assets/BIBI(59).jpg');
-			background-size: cover;
-			background-position: center;
-			background-attachment: fixed;
+
+		/* ─── CLICK-TO-START OVERLAY ─── */
+		#clickToStart {
+			position: fixed;
+			inset: 0;
+			background: radial-gradient(ellipse at center, rgba(26,10,20,0.92) 0%, rgba(10,0,8,0.97) 100%);
+			z-index: 9999;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			cursor: pointer;
+			backdrop-filter: blur(8px);
+			transition: opacity 0.6s ease;
+		}
+		.start-inner {
+			text-align: center;
+			padding: 40px;
+		}
+		.start-cake {
+			font-size: 5rem;
+			display: block;
+			margin-bottom: 24px;
+			animation: cakeBounce 1.2s ease-in-out infinite;
+		}
+		@keyframes cakeBounce {
+			0%,100% { transform: translateY(0) scale(1); }
+			50%      { transform: translateY(-18px) scale(1.08); }
+		}
+		.start-inner h2 {
+			font-family: 'Cinzel Decorative', serif;
+			font-size: clamp(1.4rem, 4vw, 2.2rem);
+			color: var(--gold);
+			letter-spacing: 3px;
+			margin-bottom: 14px;
+			text-shadow: 0 0 30px rgba(245,200,66,0.6);
+		}
+		.start-inner p {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1.2rem;
+			color: var(--rose-light);
+			font-style: italic;
+		}
+		.start-glow {
+			position: absolute;
+			width: 300px; height: 300px;
+			border-radius: 50%;
+			background: radial-gradient(circle, rgba(245,200,66,0.15) 0%, transparent 70%);
+			top: 50%; left: 50%;
+			transform: translate(-50%,-50%);
+			animation: glowPulse 2s ease-in-out infinite;
+		}
+		@keyframes glowPulse {
+			0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+			50%      { transform: translate(-50%,-50%) scale(1.4); opacity: 1; }
+		}
+
+		/* ─── HERO ─── */
+		.hero {
+			min-height: 100vh;
 			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			background-image:
+				linear-gradient(rgba(26,10,20,0.6), rgba(13,0,8,0.7)),
+				url('assets/BIBI(59).jpg');
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+		.hero-bg-pattern {
+			position: absolute;
+			inset: 0;
+			background-image:
+				radial-gradient(circle at 20% 20%, rgba(245,200,66,0.06) 0%, transparent 40%),
+				radial-gradient(circle at 80% 80%, rgba(232,99,122,0.08) 0%, transparent 40%),
+				radial-gradient(circle at 60% 10%, rgba(245,200,66,0.04) 0%, transparent 30%);
+			pointer-events: none;
+		}
+		/* Gold decorative lines */
+		.hero-lines {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
 			overflow: hidden;
 		}
-		
-		.hero::before {
+		.hero-lines::before,
+		.hero-lines::after {
 			content: '';
 			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-			background-size: cover;
-			background-position: bottom;
+			border: 1px solid rgba(245,200,66,0.12);
+			border-radius: 50%;
 		}
-		
+		.hero-lines::before {
+			width: 600px; height: 600px;
+			top: 50%; left: 50%;
+			transform: translate(-50%,-50%);
+		}
+		.hero-lines::after {
+			width: 900px; height: 900px;
+			top: 50%; left: 50%;
+			transform: translate(-50%,-50%);
+		}
+
 		.hero-content {
-			text-align: center;
-			color: white;
+			position: relative;
 			z-index: 2;
+			text-align: center;
 			padding: 40px 20px;
 			max-width: 900px;
 		}
-		
-		.balloons {
-			display: flex;
-			gap: 20px;
-			justify-content: center;
-			margin-bottom: 30px;
-		}
-		
-		.balloon {
-			width: 50px;
-			height: 70px;
-			border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-			position: relative;
-			animation: float 3s ease-in-out infinite;
-			box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-		}
-		
-		.balloon:nth-child(1) {
-			background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
-		}
-		
-		.balloon:nth-child(2) {
-			background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
-			animation-delay: 0.5s;
-		}
-		
-		.balloon:nth-child(3) {
-			background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
-			animation-delay: 1s;
-		}
-		
-		.balloon:nth-child(4) {
-			background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);
-			animation-delay: 1.5s;
-		}
-		
-		.balloon:nth-child(5) {
-			background: linear-gradient(135deg, #54a0ff 0%, #00d2d3 100%);
-			animation-delay: 2s;
-		}
-		
-		@keyframes float {
-			0%, 100% { transform: translateY(0) rotate(-5deg); }
-			50% { transform: translateY(-30px) rotate(5deg); }
-		}
-		
-		.balloon::after {
-			content: '';
-			position: absolute;
-			bottom: -25px;
-			left: 50%;
-			width: 2px;
-			height: 25px;
-			background: rgba(255,255,255,0.6);
-			transform: translateX(-50%);
-		}
-		
-		h1 {
-			font-family: 'Great Vibes', cursive;
-			font-size: 5em;
-			margin-bottom: 20px;
-			text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-			animation: slideIn 1.5s ease-out;
-		}
-		
-		@keyframes slideIn {
-			from {
-				opacity: 0;
-				transform: translateY(-50px);
-			}
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
-		
-		.hero-subtitle {
-			font-family: 'Playfair Display', serif;
-			font-size: 1.8em;
-			margin-bottom: 30px;
-			font-weight: 300;
-			letter-spacing: 2px;
-		}
-		
-		.heart-pulse {
-			font-size: 3em;
-			animation: pulse 1.5s infinite;
-			display: inline-block;
-			margin: 20px 0;
-		}
-		
-		@keyframes pulse {
-			0%, 100% { transform: scale(1); }
-			50% { transform: scale(1.3); }
-		}
-		
-		/* Main Content */
-		.content {
-			position: relative;
-			z-index: 1;
-		}
-		
-		.section {
-			padding: 80px 20px;
-			max-width: 1200px;
-			margin: 0 auto;
-		}
-		
-		.love-story {
-			background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-			text-align: center;
-		}
-		
-		.section-title {
-			font-family: 'Playfair Display', serif;
-			font-size: 3em;
-			color: #2d3436;
+
+		/* Birthday cake with candles */
+		.cake-scene {
 			margin-bottom: 40px;
 			position: relative;
 			display: inline-block;
 		}
-		
-		.section-title::after {
+		.cake-emoji {
+			font-size: clamp(3rem, 8vw, 5rem);
+			display: block;
+			filter: drop-shadow(0 0 20px rgba(245,200,66,0.5));
+			animation: float 4s ease-in-out infinite;
+		}
+		@keyframes float {
+			0%,100% { transform: translateY(0); }
+			50%      { transform: translateY(-15px); }
+		}
+		/* Candle flames row */
+		.candles-row {
+			display: flex;
+			justify-content: center;
+			gap: 18px;
+			margin-bottom: 12px;
+		}
+		.candle {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 2px;
+		}
+		.flame {
+			width: 10px; height: 18px;
+			background: radial-gradient(ellipse at 50% 70%, #fff 0%, var(--gold-light) 30%, var(--rose) 70%, transparent 100%);
+			border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+			animation: flicker 0.8s ease-in-out infinite alternate;
+			filter: blur(0.5px);
+			box-shadow: 0 0 8px 3px rgba(245,200,66,0.6), 0 0 20px 6px rgba(245,200,66,0.2);
+		}
+		.candle:nth-child(2) .flame { animation-delay: 0.15s; }
+		.candle:nth-child(3) .flame { animation-delay: 0.3s; }
+		.candle:nth-child(4) .flame { animation-delay: 0.45s; }
+		.candle:nth-child(5) .flame { animation-delay: 0.6s; }
+		@keyframes flicker {
+			0%   { transform: scaleX(1) scaleY(1) rotate(-2deg); opacity: 0.9; }
+			100% { transform: scaleX(0.85) scaleY(1.1) rotate(2deg); opacity: 1; }
+		}
+		.candle-body {
+			width: 8px; height: 28px;
+			border-radius: 3px;
+		}
+		.candle:nth-child(1) .candle-body { background: linear-gradient(to bottom, #ff9ff3, #f8a5c2); }
+		.candle:nth-child(2) .candle-body { background: linear-gradient(to bottom, var(--gold-light), var(--gold)); }
+		.candle:nth-child(3) .candle-body { background: linear-gradient(to bottom, #a8edea, #78c7c1); }
+		.candle:nth-child(4) .candle-body { background: linear-gradient(to bottom, var(--rose-light), var(--rose)); }
+		.candle:nth-child(5) .candle-body { background: linear-gradient(to bottom, #c8a2f5, #9b59b6); }
+
+		/* Balloons */
+		.balloons-row {
+			display: flex;
+			justify-content: center;
+			gap: 16px;
+			margin-bottom: 40px;
+		}
+		.balloon {
+			width: 44px; height: 60px;
+			border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+			position: relative;
+			animation: balloonFloat 3s ease-in-out infinite;
+			box-shadow: inset -8px -8px 20px rgba(0,0,0,0.25), inset 4px 4px 10px rgba(255,255,255,0.2);
+		}
+		.balloon::after {
 			content: '';
 			position: absolute;
-			bottom: -10px;
-			left: 50%;
+			bottom: -22px; left: 50%;
+			width: 1.5px; height: 22px;
+			background: rgba(255,255,255,0.4);
 			transform: translateX(-50%);
-			width: 100px;
-			height: 3px;
-			background: linear-gradient(90deg, #ff6b9d, #feca57);
-			border-radius: 2px;
 		}
-		
-		.story-timeline {
-			margin-top: 50px;
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-			gap: 40px;
+		.balloon:nth-child(1) { background: linear-gradient(135deg,#ff6b9d,#c0392b); animation-delay: 0s; }
+		.balloon:nth-child(2) { background: linear-gradient(135deg,#ffeaa7,#f0b429); animation-delay: 0.4s; }
+		.balloon:nth-child(3) { background: linear-gradient(135deg,#81ecec,#00b894); animation-delay: 0.8s; }
+		.balloon:nth-child(4) { background: linear-gradient(135deg,#a29bfe,#6c5ce7); animation-delay: 1.2s; }
+		.balloon:nth-child(5) { background: linear-gradient(135deg,#fd79a8,#e84393); animation-delay: 1.6s; }
+		.balloon:nth-child(6) { background: linear-gradient(135deg,#ffeaa7,#e17055); animation-delay: 2.0s; }
+		@keyframes balloonFloat {
+			0%,100% { transform: translateY(0) rotate(-3deg); }
+			50%      { transform: translateY(-20px) rotate(3deg); }
 		}
-		
-		.story-card {
-			background: white;
-			padding: 30px;
-			border-radius: 20px;
-			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-			transition: transform 0.3s ease, box-shadow 0.3s ease;
-			text-align: left;
+
+		.hero-eyebrow {
+			font-family: 'Cinzel Decorative', serif;
+			font-size: clamp(0.65rem, 2vw, 0.85rem);
+			letter-spacing: 6px;
+			color: var(--gold);
+			text-transform: uppercase;
+			margin-bottom: 16px;
+			opacity: 0;
+			animation: fadeUp 1s 0.3s forwards;
 		}
-		
-		.story-card:hover {
-			transform: translateY(-10px);
-			box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+		.hero-title {
+			font-family: 'Pinyon Script', cursive;
+			font-size: clamp(3.5rem, 10vw, 7rem);
+			color: var(--gold-light);
+			line-height: 1.1;
+			text-shadow: 0 0 40px rgba(245,200,66,0.4), 2px 2px 0 rgba(180,120,20,0.3);
+			opacity: 0;
+			animation: fadeUp 1.2s 0.6s forwards;
+			margin-bottom: 12px;
 		}
-		
-		.story-card h3 {
-			font-family: 'Dancing Script', cursive;
-			font-size: 2em;
-			color: #ff6b9d;
-			margin-bottom: 15px;
+		.hero-subtitle {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: clamp(1.1rem, 3vw, 1.5rem);
+			font-style: italic;
+			font-weight: 300;
+			color: var(--rose-light);
+			letter-spacing: 2px;
+			opacity: 0;
+			animation: fadeUp 1s 0.9s forwards;
+			margin-bottom: 30px;
 		}
-		
-		.story-card p {
-			color: #636e72;
-			line-height: 1.8;
-			font-size: 1.05em;
+		.heart-pulse {
+			font-size: 2.4rem;
+			display: inline-block;
+			animation: heartbeat 1.4s ease-in-out infinite;
+			opacity: 0;
+			animation: heartbeat 1.4s 1.2s ease-in-out infinite, fadeUp 0.8s 1.2s forwards;
 		}
-		
-		/* Photo Gallery Slider */
-		.gallery {
-			background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+		@keyframes heartbeat {
+			0%,100% { transform: scale(1); }
+			14%      { transform: scale(1.3); }
+			28%      { transform: scale(1); }
+			42%      { transform: scale(1.2); }
+			56%      { transform: scale(1); }
+		}
+		@keyframes fadeUp {
+			from { opacity: 0; transform: translateY(30px); }
+			to   { opacity: 1; transform: translateY(0); }
+		}
+
+		/* Gold divider */
+		.gold-divider {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			justify-content: center;
+			margin: 0 auto 60px;
+			max-width: 600px;
+		}
+		.gold-divider::before,
+		.gold-divider::after {
+			content: '';
+			flex: 1;
+			height: 1px;
+			background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
+		}
+		.gold-divider span {
+			color: var(--gold);
+			font-size: 1.2rem;
+		}
+
+		/* ─── SECTIONS ─── */
+		.section-wrap {
+			position: relative;
+			z-index: 2;
+		}
+
+		/* LOVE STORY */
+		.love-story-section {
+			background: linear-gradient(180deg, var(--deep) 0%, #22091a 40%, #1a0a14 100%);
+			padding: 100px 20px;
 			text-align: center;
 		}
-		
-		.photo-slider-container {
-			position: relative;
-			max-width: 1200px;
-			margin: 50px auto 0;
-			padding: 0 60px;
+		.section-heading {
+			font-family: 'Cinzel Decorative', serif;
+			font-size: clamp(1.4rem, 4vw, 2.2rem);
+			color: var(--gold);
+			letter-spacing: 3px;
+			margin-bottom: 14px;
 		}
-		
-		.photo-slider {
+		.section-sub {
+			font-family: 'Cormorant Garamond', serif;
+			font-style: italic;
+			font-size: 1.1rem;
+			color: var(--text-muted);
+			margin-bottom: 60px;
+		}
+		.story-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 28px;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		.story-card {
+			background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(245,200,66,0.04) 100%);
+			border: 1px solid rgba(245,200,66,0.15);
+			border-radius: 16px;
+			padding: 36px 28px;
+			text-align: left;
+			transition: all 0.4s ease;
 			position: relative;
 			overflow: hidden;
-			border-radius: 20px;
-			box-shadow: 0 15px 40px rgba(0,0,0,0.2);
 		}
-		
+		.story-card::before {
+			content: '';
+			position: absolute;
+			top: 0; left: 0;
+			width: 3px; height: 100%;
+			background: linear-gradient(to bottom, var(--gold), var(--rose));
+		}
+		.story-card:hover {
+			transform: translateY(-8px);
+			border-color: rgba(245,200,66,0.4);
+			box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(245,200,66,0.08);
+		}
+		.story-num {
+			font-family: 'Cinzel Decorative', serif;
+			font-size: 2.5rem;
+			color: rgba(245,200,66,0.15);
+			position: absolute;
+			top: 16px; right: 20px;
+			line-height: 1;
+		}
+		.story-card h3 {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1.5rem;
+			color: var(--gold-light);
+			margin-bottom: 14px;
+			font-style: italic;
+		}
+		.story-card p {
+			font-size: 0.95rem;
+			line-height: 1.9;
+			color: #c8a8b8;
+			font-weight: 300;
+		}
+
+		/* PHOTO GALLERY */
+		.gallery-section {
+			padding: 100px 20px;
+			background: var(--deep2);
+			text-align: center;
+		}
+		/* Slider wrapper */
+		.photo-slider-container {
+			position: relative;
+			max-width: 900px;
+			margin: 0 auto;
+		}
+		.photo-slider {
+			border-radius: 20px;
+			overflow: hidden;
+			box-shadow: 0 25px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,200,66,0.2);
+			position: relative;
+		}
 		.photo-track {
 			display: flex;
-			transition: transform 0.5s ease-in-out;
+			transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
 		}
-		
 		.photo-slide {
 			min-width: 100%;
 			position: relative;
-			cursor: pointer;
+			cursor: zoom-in;
 		}
-		
 		.photo-slide img {
 			width: 100%;
-			height: 500px;
+			height: 520px;
 			object-fit: cover;
 			display: block;
 		}
-		
+		.photo-caption {
+			position: absolute;
+			bottom: 0; left: 0; right: 0;
+			background: linear-gradient(transparent, rgba(10,0,8,0.85));
+			padding: 50px 24px 22px;
+			font-family: 'Pinyon Script', cursive;
+			font-size: 1.8rem;
+			color: var(--gold-light);
+			text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+		}
 		.slider-btn {
 			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			background: rgba(255,255,255,0.9);
+			top: 50%; transform: translateY(-50%);
+			background: rgba(245,200,66,0.9);
 			border: none;
-			width: 50px;
-			height: 50px;
+			width: 52px; height: 52px;
 			border-radius: 50%;
-			font-size: 24px;
+			font-size: 22px;
+			color: var(--deep);
 			cursor: pointer;
 			z-index: 10;
-			transition: all 0.3s ease;
-			box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+			transition: all 0.25s ease;
+			box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+			font-weight: bold;
 		}
-		
 		.slider-btn:hover {
-			background: white;
+			background: var(--gold);
 			transform: translateY(-50%) scale(1.1);
-			box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 		}
-		
-		.slider-btn.prev {
-			left: 10px;
+		.slider-btn.prev { left: -26px; }
+		.slider-btn.next { right: -26px; }
+		/* Slide counter badge */
+		.slide-counter {
+			position: absolute;
+			top: 16px; right: 16px;
+			background: rgba(10,0,8,0.7);
+			border: 1px solid rgba(245,200,66,0.3);
+			border-radius: 20px;
+			padding: 5px 14px;
+			font-family: 'Cinzel Decorative', serif;
+			font-size: 0.7rem;
+			color: var(--gold);
+			letter-spacing: 1px;
+			z-index: 5;
 		}
-		
-		.slider-btn.next {
-			right: 10px;
-		}
-		
 		.slider-dots {
 			display: flex;
 			justify-content: center;
-			gap: 10px;
-			margin-top: 30px;
+			gap: 8px;
+			margin-top: 24px;
 			flex-wrap: wrap;
 		}
-		
 		.dot {
-			width: 12px;
-			height: 12px;
+			width: 8px; height: 8px;
 			border-radius: 50%;
-			background: rgba(255,255,255,0.5);
-			border: 2px solid rgba(255,255,255,0.8);
+			background: rgba(245,200,66,0.2);
+			border: 1px solid rgba(245,200,66,0.4);
 			cursor: pointer;
 			transition: all 0.3s ease;
 		}
-		
 		.dot.active {
-			background: #ff6b9d;
-			border-color: #ff6b9d;
-			transform: scale(1.3);
+			background: var(--gold);
+			border-color: var(--gold);
+			transform: scale(1.4);
 		}
-		
-		.photo-caption {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			background: linear-gradient(transparent, rgba(0,0,0,0.8));
-			color: white;
-			padding: 40px 20px 20px;
-			font-family: 'Dancing Script', cursive;
-			font-size: 1.5em;
-			text-align: center;
-		}
-		
-		/* Lightbox Modal */
+
+		/* LIGHTBOX */
 		.lightbox {
 			display: none;
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0,0,0,0.95);
+			inset: 0;
+			background: rgba(0,0,0,0.97);
 			z-index: 10000;
 			align-items: center;
 			justify-content: center;
 		}
-		
-		.lightbox.active {
-			display: flex;
+		.lightbox.active { display: flex; }
+		.lightbox-content {
+			position: relative;
+			max-width: 92%;
+			max-height: 92%;
+			text-align: center;
 		}
-		
-		.lightbox-nav {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			background: rgba(255,255,255,0.9);
+		.lightbox-content img {
+			max-width: 100%;
+			max-height: 85vh;
+			object-fit: contain;
+			border-radius: 10px;
+			box-shadow: 0 0 0 1px rgba(245,200,66,0.25);
+		}
+		.lightbox-close {
+			position: fixed;
+			top: 24px; right: 24px;
+			background: var(--gold);
 			border: none;
-			width: 60px;
-			height: 60px;
+			width: 46px; height: 46px;
 			border-radius: 50%;
-			font-size: 30px;
+			font-size: 22px;
+			color: var(--deep);
 			cursor: pointer;
-			z-index: 10002;
-			transition: all 0.3s ease;
-			color: #2d3436;
+			z-index: 10001;
+			transition: all 0.3s;
+			font-weight: bold;
+		}
+		.lightbox-close:hover { background: white; transform: scale(1.1) rotate(90deg); }
+		.lightbox-nav {
+			position: fixed;
+			top: 50%; transform: translateY(-50%);
+			background: rgba(245,200,66,0.9);
+			border: none;
+			width: 56px; height: 56px;
+			border-radius: 50%;
+			font-size: 26px;
+			color: var(--deep);
+			cursor: pointer;
+			z-index: 10001;
+			font-weight: bold;
+			transition: all 0.25s;
+		}
+		.lightbox-nav:hover { background: var(--gold); transform: translateY(-50%) scale(1.1); }
+		.lightbox-nav.prev { left: 24px; }
+		.lightbox-nav.next { right: 24px; }
+		.lightbox-caption {
+			margin-top: 16px;
+			font-family: 'Pinyon Script', cursive;
+			font-size: 2rem;
+			color: var(--gold-light);
+		}
+
+		/* MESSAGE SECTION */
+		.message-section {
+			padding: 100px 20px;
+			background: linear-gradient(180deg, #1a0a14 0%, #22091a 50%, #1a0a14 100%);
+			text-align: center;
+			position: relative;
+		}
+		.message-section::before {
+			content: '♥';
+			position: absolute;
+			top: 30px; left: 50%;
+			transform: translateX(-50%);
+			font-size: 2rem;
+			color: rgba(245,200,66,0.2);
+		}
+		.letter-card {
+			background: linear-gradient(135deg, rgba(253,246,236,0.05) 0%, rgba(245,200,66,0.03) 100%);
+			border: 1px solid rgba(245,200,66,0.2);
+			border-radius: 20px;
+			padding: 60px 50px;
+			max-width: 820px;
+			margin: 0 auto;
+			position: relative;
+			box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(245,200,66,0.1);
+		}
+		.letter-card::before {
+			content: '"';
+			position: absolute;
+			top: -20px; left: 40px;
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 8rem;
+			color: rgba(245,200,66,0.12);
+			line-height: 1;
+		}
+		.letter-greeting {
+			font-family: 'Pinyon Script', cursive;
+			font-size: 2.2rem;
+			color: var(--gold-light);
+			margin-bottom: 28px;
+		}
+		.letter-card p {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1.2rem;
+			line-height: 2.1;
+			color: #d4bac8;
+			margin-bottom: 22px;
+			font-weight: 300;
+		}
+		.letter-signature {
+			font-family: 'Pinyon Script', cursive;
+			font-size: 2.5rem;
+			color: var(--rose-light);
+			margin-top: 20px;
+		}
+
+		/* WISHES SECTION */
+		.wishes-section {
+			padding: 100px 20px;
+			background: radial-gradient(ellipse at center, #2d0e1e 0%, #1a0a14 70%);
+			text-align: center;
+		}
+		.wishes-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 24px;
+			max-width: 1100px;
+			margin: 0 auto;
+		}
+		.wish-card {
+			background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(245,200,66,0.04));
+			border: 1px solid rgba(245,200,66,0.15);
+			border-radius: 16px;
+			padding: 40px 28px;
+			transition: all 0.4s ease;
+			position: relative;
+			overflow: hidden;
+		}
+		.wish-card::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: radial-gradient(circle at 50% 0%, rgba(245,200,66,0.06), transparent 70%);
+			opacity: 0;
+			transition: opacity 0.4s ease;
+		}
+		.wish-card:hover {
+			transform: translateY(-8px);
+			border-color: rgba(245,200,66,0.4);
+			box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+		}
+		.wish-card:hover::after { opacity: 1; }
+		.wish-icon {
+			font-size: 2.8rem;
+			margin-bottom: 18px;
+			display: block;
+			filter: drop-shadow(0 0 8px rgba(245,200,66,0.4));
+		}
+		.wish-card h3 {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1.5rem;
+			color: var(--gold-light);
+			margin-bottom: 12px;
+			font-style: italic;
+		}
+		.wish-card p {
+			font-size: 0.92rem;
+			line-height: 1.8;
+			color: #b894a8;
+			font-weight: 300;
+		}
+
+		/* LOVE NOTE (random messages) */
+		.love-note-section {
+			padding: 80px 20px;
+			background: var(--deep);
+			text-align: center;
+		}
+		.love-note-box {
+			max-width: 700px;
+			margin: 0 auto;
+		}
+		.love-note-card {
+			background: linear-gradient(135deg, rgba(232,99,122,0.08), rgba(245,200,66,0.06));
+			border: 1px solid rgba(232,99,122,0.25);
+			border-radius: 20px;
+			padding: 50px 40px;
+			margin-bottom: 24px;
+			min-height: 160px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 		}
-		
-		.lightbox-nav:hover {
-			background: #ff6b9d;
-			color: white;
-			transform: translateY(-50%) scale(1.15);
-			box-shadow: 0 8px 25px rgba(255,107,157,0.5);
+		.love-note-text {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1.4rem;
+			font-style: italic;
+			color: var(--text-light);
+			line-height: 1.8;
+			transition: opacity 0.5s ease;
 		}
-		
-		.lightbox-nav.prev {
-			left: 30px;
-		}
-		
-		.lightbox-nav.next {
-			right: 30px;
-		}
-		
-		.lightbox-content {
-			position: relative;
-			max-width: 90%;
-			max-height: 90%;
-		}
-		
-		.lightbox-content img {
-			max-width: 100%;
-			max-height: 90vh;
-			object-fit: contain;
-			border-radius: 10px;
-		}
-		
-		.lightbox-close {
-			position: absolute;
-			top: 20px;
-			right: 20px;
-			background: white;
+		.reveal-btn {
+			background: linear-gradient(135deg, var(--rose), var(--rose-dark));
 			border: none;
-			width: 50px;
-			height: 50px;
-			border-radius: 50%;
-			font-size: 24px;
+			border-radius: 40px;
+			padding: 16px 40px;
+			font-family: 'Cinzel Decorative', serif;
+			font-size: 0.8rem;
+			letter-spacing: 2px;
+			color: white;
 			cursor: pointer;
-			z-index: 10001;
 			transition: all 0.3s ease;
+			box-shadow: 0 8px 25px rgba(232,99,122,0.3);
 		}
-		
-		.lightbox-close:hover {
-			background: #ff6b9d;
-			color: white;
-			transform: scale(1.1);
+		.reveal-btn:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 14px 35px rgba(232,99,122,0.5);
 		}
-		
-		.lightbox-caption {
-			position: absolute;
-			bottom: -50px;
-			left: 0;
-			right: 0;
-			color: white;
+
+		/* FOOTER */
+		footer {
+			background: linear-gradient(180deg, var(--deep2) 0%, #0d0008 100%);
+			padding: 60px 20px 40px;
 			text-align: center;
-			font-family: 'Dancing Script', cursive;
-			font-size: 1.5em;
+			border-top: 1px solid rgba(245,200,66,0.1);
 		}
-		
-		/* Message Section */
-		.message {
-			background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffdde1 100%);
-			text-align: center;
+		.footer-title {
+			font-family: 'Pinyon Script', cursive;
+			font-size: 3rem;
+			color: var(--gold-light);
+			margin-bottom: 16px;
 		}
-		
-		.message-content {
-			background: white;
-			padding: 50px;
-			border-radius: 25px;
-			box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-			max-width: 800px;
-			margin: 0 auto;
-		}
-		
-		.message-content p {
-			font-size: 1.3em;
-			line-height: 2;
-			color: #2d3436;
-			font-weight: 300;
-			margin-bottom: 25px;
-		}
-		
-		.message-content .signature {
-			font-family: 'Great Vibes', cursive;
-			font-size: 2.5em;
-			color: #ff6b9d;
-			margin-top: 30px;
-		}
-		
-		/* Wishes Section */
-		.wishes {
-			background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-			color: white;
-			text-align: center;
-		}
-		
-		.wishes-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			gap: 30px;
-			margin-top: 50px;
-		}
-		
-		.wish-card {
-			background: rgba(255,255,255,0.15);
-			backdrop-filter: blur(10px);
-			padding: 35px;
-			border-radius: 20px;
-			border: 2px solid rgba(255,255,255,0.3);
-			transition: all 0.3s ease;
-		}
-		
-		.wish-card:hover {
-			background: rgba(255,255,255,0.25);
-			transform: translateY(-5px);
-		}
-		
-		.wish-icon {
-			font-size: 3em;
-			margin-bottom: 20px;
-		}
-		
-		.wish-card h3 {
-			font-family: 'Playfair Display', serif;
-			font-size: 1.8em;
-			margin-bottom: 15px;
-		}
-		
-		.wish-card p {
-			font-size: 1.1em;
-			line-height: 1.6;
-		}
-		
-		/* Footer */
-		.footer {
-			background: #2d3436;
-			color: white;
-			text-align: center;
-			padding: 40px 20px;
-		}
-		
-		.footer p {
-			font-family: 'Dancing Script', cursive;
-			font-size: 1.5em;
-			margin-bottom: 10px;
-		}
-		
-		.footer .hearts {
-			font-size: 2em;
+		.footer-hearts {
+			font-size: 1.6rem;
 			letter-spacing: 10px;
+			margin-bottom: 20px;
+			display: block;
 		}
-		
-		/* Responsive */
-		@media (max-width: 768px) {
-			h1 {
-				font-size: 3em;
-			}
-			
-			.hero-subtitle {
-				font-size: 1.3em;
-			}
-			
-			.section-title {
-				font-size: 2em;
-			}
-			
-			.section {
-				padding: 50px 15px;
-			}
-			
-			.balloons {
-				gap: 12px;
-			}
-			
-			.balloon {
-				width: 35px;
-				height: 50px;
-			}
-			
-			.lightbox-nav {
-				width: 50px;
-				height: 50px;
-				font-size: 24px;
-			}
-			
-			.lightbox-nav.prev {
-				left: 10px;
-			}
-			
-			.lightbox-nav.next {
-				right: 10px;
-			}
+		.footer-cake {
+			font-size: 2.5rem;
+			margin-bottom: 12px;
+			display: block;
+		}
+		.footer-from {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 1rem;
+			color: var(--text-muted);
+			letter-spacing: 2px;
+			font-style: italic;
+		}
+
+		/* MUSIC CONTROL */
+		#musicControl {
+			position: fixed;
+			bottom: 30px; right: 30px;
+			z-index: 1000;
+			background: linear-gradient(135deg, var(--rose-dark), var(--rose));
+			width: 58px; height: 58px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			box-shadow: 0 6px 24px rgba(0,0,0,0.4), 0 0 0 0 rgba(232,99,122,0.5);
+			transition: all 0.3s ease;
+			animation: musicPing 2.5s ease-in-out infinite;
+		}
+		@keyframes musicPing {
+			0%,100% { box-shadow: 0 6px 24px rgba(0,0,0,0.4), 0 0 0 0 rgba(232,99,122,0.5); }
+			50%      { box-shadow: 0 6px 24px rgba(0,0,0,0.4), 0 0 0 12px rgba(232,99,122,0); }
+		}
+		#musicControl:hover { transform: scale(1.12); }
+		#musicControl span { font-size: 22px; }
+
+		/* SCROLL REVEAL */
+		.reveal {
+			opacity: 0;
+			transform: translateY(40px);
+			transition: opacity 0.8s ease, transform 0.8s ease;
+		}
+		.reveal.visible {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		/* RESPONSIVE */
+		@media (max-width: 700px) {
+			.slider-btn.prev { left: 6px; }
+			.slider-btn.next { right: 6px; }
+			.photo-slide img { height: 280px; }
+			.letter-card { padding: 40px 24px; }
+			.balloons-row { gap: 10px; }
+			.balloon { width: 34px; height: 48px; }
 		}
 	</style>
 </head>
 <body>
-	<!-- Floating hearts background -->
-	<div class="hearts-bg" id="heartsContainer"></div>
-	
-	<!-- Hero Section -->
-	<section class="hero">
-		<div class="hero-content">
-			<div class="balloons">
-				<div class="balloon"></div>
-				<div class="balloon"></div>
-				<div class="balloon"></div>
-				<div class="balloon"></div>
-				<div class="balloon"></div>
-			</div>
-			<h1>Happy Birthday, My Love!</h1>
-			<div class="heart-pulse">❤️</div>
-			<p class="hero-subtitle">To the Love of My Life</p>
-		</div>
-	</section>
-	
-	<!-- Love Story Section -->
-	<section class="section love-story">
-		<h2 class="section-title">Our Love Story</h2>
-		<div class="story-timeline">
-			<div class="story-card">
-				<h3>The First Moment</h3>
-				<p>From the very first moment I laid eyes on you, I knew my life was about to change forever. Your smile lit up the entire room, and my heart skipped a beat. It was as if the universe conspired to bring us together at that exact moment in time.</p>
-			</div>
-			<div class="story-card">
-				<h3>Falling Deeper</h3>
-				<p>Every conversation, every laugh, every shared moment made me fall deeper in love with you. You're not just my wife; you're my best friend, my confidant, and my partner in every adventure. Your kindness, intelligence, and warmth captivate me more with each passing day.</p>
-			</div>
-			<div class="story-card">
-				<h3>Forever Together</h3>
-				<p>Through all the ups and downs, through laughter and tears, you've been my constant. You make ordinary moments extraordinary. Building a life with you has been the greatest blessing, and I promise to cherish every single day we have together.</p>
-			</div>
-			<div class="story-card">
-				<h3>My Everything</h3>
-				<p>You are my sunrise and my sunset, my first thought in the morning and my last at night. Your love has transformed me into a better person. Thank you for choosing me, for loving me, and for being the amazing woman you are.</p>
-			</div>
-			<div class="story-card">
-				<h3>The Journey Ahead</h3>
-				<p>As we celebrate another year of your beautiful life, I'm filled with gratitude for all the memories we've created and excitement for all the adventures still to come. With you by my side, every day is a gift, and every moment is precious.</p>
-			</div>
-			<div class="story-card">
-				<h3>Today and Always</h3>
-				<p>Today is your special day, but you make every day special for me. Your love is the melody that makes my heart sing. I promise to love you more today than yesterday, and even more tomorrow. You deserve all the happiness in the world, my darling.</p>
-			</div>
-		</div>
-	</section>
-	
-	<!-- Photo Gallery Slider -->
-	<section class="section gallery">
-		<h2 class="section-title">Our Beautiful Memories</h2>
-		<div class="photo-slider-container">
-			<div class="photo-slider">
-				<button class="slider-btn prev" onclick="moveSlide(-1)">‹</button>
-				<button class="slider-btn next" onclick="moveSlide(1)">›</button>
-				<div class="photo-track">
-					<div class="photo-slide" onclick="openLightbox(0)">
-						<img src="assets/23.jpeg" alt="Memory">
-						<div class="photo-caption">My beautiful love</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(1)">
-						<img src="assets/BIBI(59).jpg" alt="Memory">
-						<div class="photo-caption">My everything</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(2)">
-						<img src="assets/8.jpeg" alt="Memory">
-						<div class="photo-caption">Pure joy</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(3)">
-						<img src="assets/31.jpeg" alt="Memory">
-						<div class="photo-caption">Endless love</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(4)">
-						<img src="assets/BIBI(93).jpg" alt="Memory">
-						<div class="photo-caption">Endless love</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(5)">
-						<img src="assets/14.jpeg" alt="Memory">
-						<div class="photo-caption">Together forever</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(6)">
-						<img src="assets/BIBI(25).jpg" alt="Memory">
-						<div class="photo-caption">My beautiful wife</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(7)">
-						<img src="assets/42.jpeg" alt="Memory">
-						<div class="photo-caption">Forever and always</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(8)">
-						<img src="assets/5.jpeg" alt="Memory">
-						<div class="photo-caption">Precious moments</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(9)">
-						<img src="assets/BIBI(7).jpg" alt="Memory">
-						<div class="photo-caption">Forever in my heart</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(10)">
-						<img src="assets/27.jpeg" alt="Memory">
-						<div class="photo-caption">Love of my life</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(11)">
-						<img src="assets/BIBI(102).jpg" alt="Memory">
-						<div class="photo-caption">My heart</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(12)">
-						<img src="assets/19.jpeg" alt="Memory">
-						<div class="photo-caption">Perfect together</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(13)">
-						<img src="assets/BIBI(43).jpg" alt="Memory">
-						<div class="photo-caption">Always and forever</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(14)">
-						<img src="assets/11.jpeg" alt="Memory">
-						<div class="photo-caption">My soulmate</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(15)">
-						<img src="assets/38.jpeg" alt="Memory">
-						<div class="photo-caption">You complete me</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(16)">
-						<img src="assets/BIBI(11).jpg" alt="Memory">
-						<div class="photo-caption">Love captured</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(17)">
-						<img src="assets/3.jpeg" alt="Memory">
-						<div class="photo-caption">Beautiful memories</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(18)">
-						<img src="assets/BIBI(74).jpg" alt="Memory">
-						<div class="photo-caption">You and me</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(19)">
-						<img src="assets/29.jpeg" alt="Memory">
-						<div class="photo-caption">My queen</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(20)">
-						<img src="assets/16.jpeg" alt="Memory">
-						<div class="photo-caption">Forever yours</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(21)">
-						<img src="assets/BIBI(90).jpg" alt="Memory">
-						<div class="photo-caption">My soulmate</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(22)">
-						<img src="assets/7.jpeg" alt="Memory">
-						<div class="photo-caption">Pure happiness</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(23)">
-						<img src="assets/33.jpeg" alt="Memory">
-						<div class="photo-caption">Cherished memories</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(24)">
-						<img src="assets/BIBI(52).jpg" alt="Memory">
-						<div class="photo-caption">Love of my life</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(25)">
-						<img src="assets/21.jpeg" alt="Memory">
-						<div class="photo-caption">My treasure</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(26)">
-						<img src="assets/BIBI(12).jpg" alt="Memory">
-						<div class="photo-caption">Precious moments</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(27)">
-						<img src="assets/44.jpeg" alt="Memory">
-						<div class="photo-caption">My angel</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(28)">
-						<img src="assets/10.jpeg" alt="Memory">
-						<div class="photo-caption">Sweet love</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(29)">
-						<img src="assets/BIBI(81).jpg" alt="Memory">
-						<div class="photo-caption">Perfect together</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(30)">
-						<img src="assets/35.jpeg" alt="Memory">
-						<div class="photo-caption">My sunshine</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(31)">
-						<img src="assets/2.jpeg" alt="Memory">
-						<div class="photo-caption">Beautiful soul</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(32)">
-						<img src="assets/BIBI(95).jpg" alt="Memory">
-						<div class="photo-caption">My queen</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(33)">
-						<img src="assets/25.jpeg" alt="Memory">
-						<div class="photo-caption">Forever love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(34)">
-						<img src="assets/13.jpeg" alt="Memory">
-						<div class="photo-caption">My heartbeat</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(35)">
-						<img src="assets/BIBI(19).jpg" alt="Memory">
-						<div class="photo-caption">Pure happiness</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(36)">
-						<img src="assets/39.jpeg" alt="Memory">
-						<div class="photo-caption">Amazing moments</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(37)">
-						<img src="assets/WhatsApp Image 2026-03-22 at 04.06.41 (2).jpeg" alt="Memory">
-						<div class="photo-caption">Special moments</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(38)">
-						<img src="assets/6.jpeg" alt="Memory">
-						<div class="photo-caption">My everything</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(39)">
-						<img src="assets/BIBI(46).jpg" alt="Memory">
-						<div class="photo-caption">Cherished memories</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(40)">
-						<img src="assets/28.jpeg" alt="Memory">
-						<div class="photo-caption">Love eternal</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(41)">
-						<img src="assets/17.jpeg" alt="Memory">
-						<div class="photo-caption">My beloved</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(42)">
-						<img src="assets/BIBI(100).jpg" alt="Memory">
-						<div class="photo-caption">Forever yours</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(43)">
-						<img src="assets/40.jpeg" alt="Memory">
-						<div class="photo-caption">Magical moments</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(44)">
-						<img src="assets/1.jpeg" alt="Memory">
-						<div class="photo-caption">Beautiful you</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(45)">
-						<img src="assets/BIBI(71) (1).jpg" alt="Memory">
-						<div class="photo-caption">Together forever</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(46)">
-						<img src="assets/32.jpeg" alt="Memory">
-						<div class="photo-caption">My princess</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(47)">
-						<img src="assets/9.jpeg" alt="Memory">
-						<div class="photo-caption">Wonderful you</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(48)">
-						<img src="assets/24.jpeg" alt="Memory">
-						<div class="photo-caption">Sweet memories</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(49)">
-						<img src="assets/46.jpeg" alt="Memory">
-						<div class="photo-caption">Love divine</div>
-					</div>
-					<!-- <div class="photo-slide" onclick="openLightbox(50)">
-						<img src="assets/WhatsApp Image 2026-03-22 at 04.06.44 (3).jpeg" alt="Memory">
-						<div class="photo-caption">Precious you</div>
-					</div> -->
-					<div class="photo-slide" onclick="openLightbox(51)">
-						<img src="assets/15.jpeg" alt="Memory">
-						<div class="photo-caption">My world</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(52)">
-						<img src="assets/37.jpeg" alt="Memory">
-						<div class="photo-caption">Pure love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(53)">
-						<img src="assets/4.jpeg" alt="Memory">
-						<div class="photo-caption">Lovely you</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(54)">
-						<img src="assets/22.jpeg" alt="Memory">
-						<div class="photo-caption">My dream</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(55)">
-						<img src="assets/30.jpeg" alt="Memory">
-						<div class="photo-caption">Beautiful love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(56)">
-						<img src="assets/12.jpeg" alt="Memory">
-						<div class="photo-caption">My star</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(57)">
-						<img src="assets/41.jpeg" alt="Memory">
-						<div class="photo-caption">Eternal love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(58)">
-						<img src="assets/20.jpeg" alt="Memory">
-						<div class="photo-caption">My happiness</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(59)">
-						<img src="assets/34.jpeg" alt="Memory">
-						<div class="photo-caption">Sweet love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(60)">
-						<img src="assets/26.jpeg" alt="Memory">
-						<div class="photo-caption">My blessing</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(61)">
-						<img src="assets/18.jpeg" alt="Memory">
-						<div class="photo-caption">True love</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(62)">
-						<img src="assets/36.jpeg" alt="Memory">
-						<div class="photo-caption">My joy</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(63)">
-						<img src="assets/43.jpeg" alt="Memory">
-						<div class="photo-caption">Forever together</div>
-					</div>
-					<div class="photo-slide" onclick="openLightbox(64)">
-						<img src="assets/47.jpeg" alt="Memory">
-						<div class="photo-caption">Always yours</div>
-					</div>
-		</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Floating petals -->
+<div class="petals-bg" id="petalsContainer"></div>
+
+<!-- Click-to-start overlay -->
+<div id="clickToStart">
+	<div class="start-glow"></div>
+	<div class="start-inner">
+		<span class="start-cake">🎂</span>
+		<h2>Tap to Celebrate</h2>
+		<p>Your magic birthday experience awaits...</p>
 	</div>
-	<div class="slider-dots" id="sliderDots"></div>
 </div>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+	<div class="hero-bg-pattern"></div>
+	<div class="hero-lines"></div>
+	<div class="hero-content">
+		<div class="candles-row">
+			<div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+			<div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+			<div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+			<div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+			<div class="candle"><div class="flame"></div><div class="candle-body"></div></div>
+		</div>
+		<div class="cake-scene">
+			<span class="cake-emoji">🎂</span>
+		</div>
+		<div class="balloons-row">
+			<div class="balloon"></div>
+			<div class="balloon"></div>
+			<div class="balloon"></div>
+			<div class="balloon"></div>
+			<div class="balloon"></div>
+			<div class="balloon"></div>
+		</div>
+		<p class="hero-eyebrow">✦ A celebration of you ✦</p>
+		<h1 class="hero-title">Happy Birthday,<br>My Love!</h1>
+		<p class="hero-subtitle">To the most beautiful soul I have ever known</p>
+		<span class="heart-pulse">❤️</span>
+	</div>
 </section>
 
-<!-- Lightbox Modal -->
+<!-- ─── LOVE STORY ─── -->
+<section class="section-wrap love-story-section">
+	<div class="gold-divider reveal"><span>✦</span></div>
+	<h2 class="section-heading reveal">Our Love Story</h2>
+	<p class="section-sub reveal">Every chapter written in the ink of forever</p>
+	<div class="story-grid">
+		<div class="story-card reveal">
+			<span class="story-num">01</span>
+			<h3>The First Moment</h3>
+			<p>From the very first moment I laid eyes on you, I knew my life was about to change forever. Your smile lit up the entire room, and my heart skipped a beat. The universe conspired to bring us together at that exact moment in time.</p>
+		</div>
+		<div class="story-card reveal">
+			<span class="story-num">02</span>
+			<h3>Falling Deeper</h3>
+			<p>Every conversation, every laugh, every shared moment made me fall deeper in love with you. You're not just my wife — you're my best friend, my confidant, and my partner in every adventure. Your warmth captivates me more each passing day.</p>
+		</div>
+		<div class="story-card reveal">
+			<span class="story-num">03</span>
+			<h3>Forever Together</h3>
+			<p>Through all the ups and downs, through laughter and tears, you've been my constant. You make ordinary moments extraordinary. Building a life with you has been the greatest blessing, and I promise to cherish every single day.</p>
+		</div>
+		<div class="story-card reveal">
+			<span class="story-num">04</span>
+			<h3>My Everything</h3>
+			<p>You are my sunrise and my sunset, my first thought in the morning and my last at night. Your love has transformed me into a better person. Thank you for choosing me, for loving me, and for being the amazing woman you are.</p>
+		</div>
+		<div class="story-card reveal">
+			<span class="story-num">05</span>
+			<h3>The Journey Ahead</h3>
+			<p>As we celebrate another year of your beautiful life, I'm filled with gratitude for all the memories we've created and excitement for all the adventures still to come. With you by my side, every day is a gift.</p>
+		</div>
+		<div class="story-card reveal">
+			<span class="story-num">06</span>
+			<h3>Today and Always</h3>
+			<p>Today is your special day, but you make every day special for me. Your love is the melody that makes my heart sing. I promise to love you more today than yesterday, and even more tomorrow. You deserve all the world offers.</p>
+		</div>
+	</div>
+</section>
+
+<!-- ─── GALLERY ─── -->
+<section class="section-wrap gallery-section">
+	<div class="gold-divider reveal"><span>📸</span></div>
+	<h2 class="section-heading reveal">Our Beautiful Memories</h2>
+	<p class="section-sub reveal">Every picture tells our story</p>
+
+	<div class="photo-slider-container reveal">
+		<div class="photo-slider">
+			<button class="slider-btn prev" onclick="moveSlide(-1)">&#8249;</button>
+			<button class="slider-btn next" onclick="moveSlide(1)">&#8250;</button>
+			<div class="slide-counter" id="slideCounter">1 / 1</div>
+			<div class="photo-track" id="photoTrack">
+				<div class="photo-slide" onclick="openLightbox(0)"><img src="assets/23.jpeg" alt="Memory"><div class="photo-caption">My beautiful love</div></div>
+				<div class="photo-slide" onclick="openLightbox(1)"><img src="assets/8.jpeg" alt="Memory"><div class="photo-caption">Pure joy</div></div>
+				<div class="photo-slide" onclick="openLightbox(2)"><img src="assets/31.jpeg" alt="Memory"><div class="photo-caption">Endless love</div></div>
+				<div class="photo-slide" onclick="openLightbox(3)"><img src="assets/14.jpeg" alt="Memory"><div class="photo-caption">Together forever</div></div>
+				<div class="photo-slide" onclick="openLightbox(4)"><img src="assets/42.jpeg" alt="Memory"><div class="photo-caption">Forever and always</div></div>
+				<div class="photo-slide" onclick="openLightbox(5)"><img src="assets/5.jpeg" alt="Memory"><div class="photo-caption">Precious moments</div></div>
+				<div class="photo-slide" onclick="openLightbox(6)"><img src="assets/27.jpeg" alt="Memory"><div class="photo-caption">Love of my life</div></div>
+				<div class="photo-slide" onclick="openLightbox(7)"><img src="assets/19.jpeg" alt="Memory"><div class="photo-caption">Perfect together</div></div>
+				<div class="photo-slide" onclick="openLightbox(8)"><img src="assets/11.jpeg" alt="Memory"><div class="photo-caption">My soulmate</div></div>
+				<div class="photo-slide" onclick="openLightbox(9)"><img src="assets/38.jpeg" alt="Memory"><div class="photo-caption">You complete me</div></div>
+				<div class="photo-slide" onclick="openLightbox(10)"><img src="assets/3.jpeg" alt="Memory"><div class="photo-caption">Beautiful memories</div></div>
+				<div class="photo-slide" onclick="openLightbox(11)"><img src="assets/29.jpeg" alt="Memory"><div class="photo-caption">My queen</div></div>
+				<div class="photo-slide" onclick="openLightbox(12)"><img src="assets/16.jpeg" alt="Memory"><div class="photo-caption">Forever yours</div></div>
+				<div class="photo-slide" onclick="openLightbox(13)"><img src="assets/7.jpeg" alt="Memory"><div class="photo-caption">Pure happiness</div></div>
+				<div class="photo-slide" onclick="openLightbox(14)"><img src="assets/33.jpeg" alt="Memory"><div class="photo-caption">Cherished memories</div></div>
+				<div class="photo-slide" onclick="openLightbox(15)"><img src="assets/21.jpeg" alt="Memory"><div class="photo-caption">My treasure</div></div>
+				<div class="photo-slide" onclick="openLightbox(16)"><img src="assets/44.jpeg" alt="Memory"><div class="photo-caption">My angel</div></div>
+				<div class="photo-slide" onclick="openLightbox(17)"><img src="assets/10.jpeg" alt="Memory"><div class="photo-caption">Sweet love</div></div>
+				<div class="photo-slide" onclick="openLightbox(18)"><img src="assets/35.jpeg" alt="Memory"><div class="photo-caption">My sunshine</div></div>
+				<div class="photo-slide" onclick="openLightbox(19)"><img src="assets/2.jpeg" alt="Memory"><div class="photo-caption">Beautiful soul</div></div>
+				<div class="photo-slide" onclick="openLightbox(20)"><img src="assets/25.jpeg" alt="Memory"><div class="photo-caption">Forever love</div></div>
+				<div class="photo-slide" onclick="openLightbox(21)"><img src="assets/13.jpeg" alt="Memory"><div class="photo-caption">My heartbeat</div></div>
+				<div class="photo-slide" onclick="openLightbox(22)"><img src="assets/39.jpeg" alt="Memory"><div class="photo-caption">Amazing moments</div></div>
+				<div class="photo-slide" onclick="openLightbox(23)"><img src="assets/6.jpeg" alt="Memory"><div class="photo-caption">My everything</div></div>
+				<div class="photo-slide" onclick="openLightbox(24)"><img src="assets/28.jpeg" alt="Memory"><div class="photo-caption">Love eternal</div></div>
+				<div class="photo-slide" onclick="openLightbox(25)"><img src="assets/17.jpeg" alt="Memory"><div class="photo-caption">My beloved</div></div>
+				<div class="photo-slide" onclick="openLightbox(26)"><img src="assets/40.jpeg" alt="Memory"><div class="photo-caption">Magical moments</div></div>
+				<div class="photo-slide" onclick="openLightbox(27)"><img src="assets/1.jpeg" alt="Memory"><div class="photo-caption">Beautiful you</div></div>
+				<div class="photo-slide" onclick="openLightbox(28)"><img src="assets/32.jpeg" alt="Memory"><div class="photo-caption">My princess</div></div>
+				<div class="photo-slide" onclick="openLightbox(29)"><img src="assets/9.jpeg" alt="Memory"><div class="photo-caption">Wonderful you</div></div>
+				<div class="photo-slide" onclick="openLightbox(30)"><img src="assets/24.jpeg" alt="Memory"><div class="photo-caption">Sweet memories</div></div>
+				<div class="photo-slide" onclick="openLightbox(31)"><img src="assets/46.jpeg" alt="Memory"><div class="photo-caption">Love divine</div></div>
+				<div class="photo-slide" onclick="openLightbox(32)"><img src="assets/15.jpeg" alt="Memory"><div class="photo-caption">My world</div></div>
+				<div class="photo-slide" onclick="openLightbox(33)"><img src="assets/37.jpeg" alt="Memory"><div class="photo-caption">Pure love</div></div>
+				<div class="photo-slide" onclick="openLightbox(34)"><img src="assets/4.jpeg" alt="Memory"><div class="photo-caption">Lovely you</div></div>
+				<div class="photo-slide" onclick="openLightbox(35)"><img src="assets/22.jpeg" alt="Memory"><div class="photo-caption">My dream</div></div>
+				<div class="photo-slide" onclick="openLightbox(36)"><img src="assets/30.jpeg" alt="Memory"><div class="photo-caption">Beautiful love</div></div>
+				<div class="photo-slide" onclick="openLightbox(37)"><img src="assets/12.jpeg" alt="Memory"><div class="photo-caption">My star</div></div>
+				<div class="photo-slide" onclick="openLightbox(38)"><img src="assets/41.jpeg" alt="Memory"><div class="photo-caption">Eternal love</div></div>
+				<div class="photo-slide" onclick="openLightbox(39)"><img src="assets/20.jpeg" alt="Memory"><div class="photo-caption">My happiness</div></div>
+				<div class="photo-slide" onclick="openLightbox(40)"><img src="assets/34.jpeg" alt="Memory"><div class="photo-caption">Sweet love</div></div>
+				<div class="photo-slide" onclick="openLightbox(41)"><img src="assets/26.jpeg" alt="Memory"><div class="photo-caption">My blessing</div></div>
+				<div class="photo-slide" onclick="openLightbox(42)"><img src="assets/18.jpeg" alt="Memory"><div class="photo-caption">True love</div></div>
+				<div class="photo-slide" onclick="openLightbox(43)"><img src="assets/36.jpeg" alt="Memory"><div class="photo-caption">My joy</div></div>
+				<div class="photo-slide" onclick="openLightbox(44)"><img src="assets/43.jpeg" alt="Memory"><div class="photo-caption">Forever together</div></div>
+				<div class="photo-slide" onclick="openLightbox(45)"><img src="assets/47.jpeg" alt="Memory"><div class="photo-caption">Always yours</div></div>
+			</div>
+		</div>
+		<div class="slider-dots" id="sliderDots"></div>
+	</div>
+</section>
+
+<!-- Lightbox -->
 <div class="lightbox" id="lightbox">
 	<button class="lightbox-close" onclick="closeLightbox()">×</button>
 	<button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
@@ -930,220 +969,336 @@
 		<div class="lightbox-caption" id="lightboxCaption"></div>
 	</div>
 </div>
-	
-	<!-- Personal Message -->
-	<section class="section message">
-		<h2 class="section-title">A Message From My Heart</h2>
-		<div class="message-content">
-			<p>My Dearest Love,</p>
-			<p>On this special day, I want you to know that you are the most incredible gift life has ever given me. Your presence in my life has filled it with colors I never knew existed, joy I never thought possible, and love beyond measure.</p>
-			<p>You are strong yet gentle, wise yet humble, beautiful inside and out. Every day with you is a blessing that I never take for granted. Your laughter is my favorite sound, your happiness is my greatest achievement, and your love is my most precious treasure.</p>
-			<p>Thank you for being you – for your patience, your kindness, your unwavering support, and your unconditional love. You inspire me to be better, to dream bigger, and to love deeper.</p>
-			<p>Happy Birthday, my beautiful wife. May this year bring you all the joy, success, and love that you so richly deserve. I love you more than words could ever express, today and always.</p>
-			<div class="signature">With All My Love, Forever Yours ❤️</div>
+
+<!-- ─── MESSAGE ─── -->
+<section class="section-wrap message-section">
+	<div class="gold-divider reveal"><span>💌</span></div>
+	<h2 class="section-heading reveal">A Message From My Heart</h2>
+	<p class="section-sub reveal">Words that could never be enough</p>
+	<div class="letter-card reveal">
+		<p class="letter-greeting">My Dearest Love,</p>
+		<p>On this special day, I want you to know that you are the most incredible gift life has ever given me. Your presence in my life has filled it with colors I never knew existed, joy I never thought possible, and love beyond measure.</p>
+		<p>You are strong yet gentle, wise yet humble, beautiful inside and out. Every day with you is a blessing I never take for granted. Your laughter is my favorite sound, your happiness is my greatest achievement, and your love is my most precious treasure.</p>
+		<p>Thank you for being you — for your patience, your kindness, your unwavering support, and your unconditional love. You inspire me to be better, to dream bigger, and to love deeper.</p>
+		<p>Happy Birthday, my beautiful wife. May this year bring you all the joy, success, and love that you so richly deserve. I love you more than words could ever express, today and always.</p>
+		<div class="letter-signature">With All My Love, Forever Yours ❤️</div>
+	</div>
+</section>
+
+<!-- ─── WISHES ─── -->
+<section class="section-wrap wishes-section">
+	<div class="gold-divider reveal"><span>🌟</span></div>
+	<h2 class="section-heading reveal">My Wishes For You</h2>
+	<p class="section-sub reveal">Everything beautiful, always</p>
+	<div class="wishes-grid">
+		<div class="wish-card reveal">
+			<span class="wish-icon">🌟</span>
+			<h3>Dreams Come True</h3>
+			<p>May all your dreams and aspirations come to life this year. You deserve every beautiful thing this world has to offer.</p>
 		</div>
-	</section>
-	
-	<!-- Birthday Wishes -->
-	<section class="section wishes">
-		<h2 class="section-title" style="color: white;">My Wishes For You</h2>
-		<div class="wishes-grid">
-			<div class="wish-card">
-				<div class="wish-icon">🌟</div>
-				<h3>Dreams Come True</h3>
-				<p>May all your dreams and aspirations come to life this year. You deserve every beautiful thing this world has to offer.</p>
-			</div>
-			<div class="wish-card">
-				<div class="wish-icon">💖</div>
-				<h3>Endless Joy</h3>
-				<p>May your days be filled with laughter, your heart with happiness, and your life with unforgettable moments of pure joy.</p>
-			</div>
-			<div class="wish-card">
-				<div class="wish-icon">🌺</div>
-				<h3>Health & Wellness</h3>
-				<p>Wishing you radiant health, boundless energy, and the vitality to enjoy every precious moment of this beautiful journey.</p>
-			</div>
-			<div class="wish-card">
-				<div class="wish-icon">✨</div>
-				<h3>Success & Growth</h3>
-				<p>May you achieve everything you set your mind to and grow in ways that bring you fulfillment and pride.</p>
-			</div>
-			<div class="wish-card">
-				<div class="wish-icon">🎉</div>
-				<h3>Adventure & Fun</h3>
-				<p>May this year be filled with exciting adventures, wonderful surprises, and memories that will make you smile for years to come.</p>
-			</div>
-			<div class="wish-card">
-				<div class="wish-icon">💝</div>
-				<h3>Infinite Love</h3>
-				<p>May you always feel cherished, adored, and loved beyond measure, because that's exactly what you are to me – everything.</p>
-			</div>
+		<div class="wish-card reveal">
+			<span class="wish-icon">💖</span>
+			<h3>Endless Joy</h3>
+			<p>May your days be filled with laughter, your heart with happiness, and your life with unforgettable moments of pure joy.</p>
 		</div>
-	</section>
-	
-	<!-- Footer -->
-	<footer class="footer">
-		<p>Forever and Always, My Love</p>
-		<div class="hearts">❤️ 💕 💖 💗 💝</div>
-		<p style="margin-top: 20px; font-size: 1em; font-family: 'Montserrat', sans-serif;">Happy Birthday, Beautiful! 🎂</p>
-		<p style="margin-top: 15px; font-size: 1.2em; font-family: 'Great Vibes', cursive;">With Love ❤️, Your Husband</p>
-	</footer>
-	
-	<!-- Background Music -->
-	<audio id="backgroundMusic" autoplay loop preload="auto" muted>
-		<source src="sound.mp3" type="audio/mpeg">
-		Your browser does not support the audio element.
-	</audio>
-	
-	<!-- Click to Start Overlay -->
-	<div id="clickToStart" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(5px);">
-		<div style="text-align: center; color: white;">
-			<div style="font-size: 4em; margin-bottom: 20px; animation: bounce 1s infinite;">🎵</div>
-			<h2 style="font-family: 'Great Vibes', cursive; font-size: 3em; margin-bottom: 10px;">Click Anywhere to Start</h2>
-			<p style="font-family: 'Montserrat', sans-serif; font-size: 1.2em;">Experience the magic with music 🎶</p>
+		<div class="wish-card reveal">
+			<span class="wish-icon">🌺</span>
+			<h3>Health & Wellness</h3>
+			<p>Wishing you radiant health, boundless energy, and the vitality to enjoy every precious moment of this beautiful journey.</p>
+		</div>
+		<div class="wish-card reveal">
+			<span class="wish-icon">✨</span>
+			<h3>Success & Growth</h3>
+			<p>May you achieve everything you set your mind to and grow in ways that bring you fulfillment and pride.</p>
+		</div>
+		<div class="wish-card reveal">
+			<span class="wish-icon">🎉</span>
+			<h3>Adventure & Fun</h3>
+			<p>May this year be filled with exciting adventures, wonderful surprises, and memories that will make you smile for years to come.</p>
+		</div>
+		<div class="wish-card reveal">
+			<span class="wish-icon">💝</span>
+			<h3>Infinite Love</h3>
+			<p>May you always feel cherished, adored, and loved beyond measure, because that's exactly what you are to me — everything.</p>
 		</div>
 	</div>
-	
-	<style>
-		@keyframes bounce {
-			0%, 100% { transform: translateY(0); }
-			50% { transform: translateY(-20px); }
-		}
-	</style>
-	
-	<!-- Music Control Button -->
-	<div id="musicControl" style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; background: linear-gradient(135deg, #ff6b9d, #f093fb); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;">
-		<span id="musicIcon" style="font-size: 24px; color: white;">🎵</span>
+</section>
+
+<!-- ─── LOVE NOTE ─── -->
+<section class="section-wrap love-note-section">
+	<div class="gold-divider reveal"><span>💬</span></div>
+	<h2 class="section-heading reveal">Sweet Nothings</h2>
+	<p class="section-sub reveal">Tap to reveal a love note just for you</p>
+	<div class="love-note-box reveal">
+		<div class="love-note-card">
+			<p class="love-note-text" id="loveNoteText">Every morning I wake up grateful that you exist in this world — and even more grateful that you chose me.</p>
+		</div>
+		<button class="reveal-btn" onclick="revealNewNote()">✦ Another Note ✦</button>
 	</div>
-	
-	<script>
-		// Wait for DOM to be fully loaded
-		document.addEventListener('DOMContentLoaded', function() {
-			// Background Music Controls - Start on first interaction
-			const music = document.getElementById('backgroundMusic');
-			const musicControl = document.getElementById('musicControl');
-			const musicIcon = document.getElementById('musicIcon');
-			const clickToStart = document.getElementById('clickToStart');
-			let isPlaying = false;
-			let musicStarted = false;
-			
-			// Set volume
-			music.volume = 0.5;
-			
-			// Function to start music and hide overlay
-			const startMusic = (e) => {
-				if (e) e.preventDefault();
-				
-				if (!musicStarted) {
-					musicStarted = true;
-					
-					// Hide the overlay immediately
-					clickToStart.style.opacity = '0';
-					clickToStart.style.transition = 'opacity 0.3s ease';
-					setTimeout(() => {
-						clickToStart.style.display = 'none';
-					}, 300);
-					
-					// Start the music
-					music.muted = false;
-					music.volume = 0.5;
-					music.play().then(() => {
-						isPlaying = true;
-						musicIcon.textContent = '🔊';
-					}).catch((error) => {
-						console.log('Music autoplay blocked, but overlay removed');
-						musicIcon.textContent = '🎵';
-						// Even if music fails, overlay is already hidden
-					});
-				}
-			};
-			
-			// Multiple ways to start - overlay click
-			if (clickToStart) {
-				clickToStart.addEventListener('click', startMusic);
-				clickToStart.addEventListener('touchstart', startMusic);
-			}
-			
-			// Also start on any key press
-			document.addEventListener('keydown', function(e) {
-				if (!musicStarted) startMusic(e);
-			}, { once: true });
-			
-			// Toggle music on button click
-			if (musicControl) {
-				musicControl.addEventListener('click', (e) => {
-					e.stopPropagation();
-					
-					// If music hasn't started yet, start it and hide overlay
-					if (!musicStarted) {
-						startMusic(e);
-						return;
-					}
-					
-					// Toggle play/pause
-					if (isPlaying) {
-						music.pause();
-						musicIcon.textContent = '🔇';
-						isPlaying = false;
-					} else {
-						music.play().then(() => {
-							musicIcon.textContent = '🔊';
-							isPlaying = true;
-						}).catch(() => {
-							musicIcon.textContent = '🎵';
-						});
-					}
-				});
-				
-				// Hover effect for music control
-				musicControl.addEventListener('mouseenter', () => {
-					musicControl.style.transform = 'scale(1.1)';
-				});
-				
-				musicControl.addEventListener('mouseleave', () => {
-					musicControl.style.transform = 'scale(1)';
-				});
-			}
-			
-			// Create floating hearts
-			const heartsContainer = document.getElementById('heartsContainer');
-			function createHeart() {
-				const heart = document.createElement('div');
-				heart.className = 'heart-float';
-				heart.innerHTML = '❤️';
-				heart.style.left = Math.random() * 100 + '%';
-				heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
-				heart.style.animationDelay = Math.random() * 5 + 's';
-				heartsContainer.appendChild(heart);
-				
-				setTimeout(() => {
-					heart.remove();
-				}, 20000);
-			}
-			
-			// Create initial hearts
-			for (let i = 0; i < 15; i++) {
-				setTimeout(createHeart, i * 1000);
-			}
-			
-			// Continue creating hearts
-			setInterval(createHeart, 2000);
-			
-			// Smooth scroll for any future navigation
-			document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-				anchor.addEventListener('click', function (e) {
-					e.preventDefault();
-					const target = document.querySelector(this.getAttribute('href'));
-					if (target) {
-						target.scrollIntoView({
-							behavior: 'smooth',
-							block: 'start'
-						});
-					}
-				});
-			});
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+	<span class="footer-cake">🎂</span>
+	<p class="footer-title">Happy Birthday, Beautiful!</p>
+	<span class="footer-hearts">❤️ 💕 💖 💗 💝</span>
+	<p class="footer-from">With every beat of my heart — Your Husband</p>
+</footer>
+
+<!-- Music -->
+<audio id="backgroundMusic" loop preload="auto" muted>
+	<source src="sound.mp3" type="audio/mpeg">
+</audio>
+<div id="musicControl">
+	<span id="musicIcon">🎵</span>
+</div>
+
+<script>
+// ─── CONFETTI ───
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+const confettiColors = ['#f5c842','#e8637a','#a29bfe','#81ecec','#fd79a8','#ffeaa7','#ff6b9d','#fff'];
+let confettiPieces = [];
+let confettiActive = false;
+
+function createConfetti(burst) {
+	const count = burst ? 180 : 3;
+	for (let i = 0; i < count; i++) {
+		confettiPieces.push({
+			x: burst ? Math.random() * canvas.width : Math.random() * canvas.width,
+			y: burst ? -20 : -20,
+			vx: (Math.random() - 0.5) * (burst ? 10 : 2),
+			vy: Math.random() * 4 + 2,
+			rot: Math.random() * 360,
+			rotv: (Math.random() - 0.5) * 8,
+			w: Math.random() * 10 + 5,
+			h: Math.random() * 5 + 3,
+			color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+			alpha: 1,
+			shape: Math.random() > 0.5 ? 'rect' : 'circle'
 		});
-	</script>
-<script src="slider.js"></script>
+	}
+}
+
+function animateConfetti() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	confettiPieces = confettiPieces.filter(p => p.alpha > 0.01);
+	confettiPieces.forEach(p => {
+		p.x += p.vx;
+		p.y += p.vy;
+		p.rot += p.rotv;
+		p.vy += 0.05;
+		if (p.y > canvas.height) p.alpha -= 0.05;
+		ctx.save();
+		ctx.globalAlpha = p.alpha;
+		ctx.translate(p.x, p.y);
+		ctx.rotate(p.rot * Math.PI / 180);
+		ctx.fillStyle = p.color;
+		if (p.shape === 'circle') {
+			ctx.beginPath(); ctx.arc(0, 0, p.w/2, 0, Math.PI*2); ctx.fill();
+		} else {
+			ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+		}
+		ctx.restore();
+	});
+	requestAnimationFrame(animateConfetti);
+}
+animateConfetti();
+
+// ─── PETALS ───
+const petalsContainer = document.getElementById('petalsContainer');
+const petalColors = ['rgba(232,99,122,0.5)','rgba(245,200,66,0.4)','rgba(255,182,193,0.5)','rgba(253,150,200,0.4)','rgba(255,220,180,0.4)'];
+function createPetal() {
+	const p = document.createElement('div');
+	p.className = 'petal';
+	p.style.left = Math.random() * 100 + '%';
+	p.style.background = petalColors[Math.floor(Math.random() * petalColors.length)];
+	p.style.animationDuration = (Math.random() * 12 + 10) + 's';
+	p.style.animationDelay = (Math.random() * 5) + 's';
+	p.style.transform = `rotate(${Math.random()*360}deg)`;
+	petalsContainer.appendChild(p);
+	setTimeout(() => p.remove(), 22000);
+}
+for (let i = 0; i < 10; i++) setTimeout(createPetal, i * 800);
+setInterval(createPetal, 1800);
+
+// ─── CLICK TO START ───
+const music = document.getElementById('backgroundMusic');
+const musicIcon = document.getElementById('musicIcon');
+const clickToStart = document.getElementById('clickToStart');
+let isPlaying = false, musicStarted = false;
+music.volume = 0.45;
+
+function startExperience(e) {
+	if (e) e.preventDefault();
+	if (musicStarted) return;
+	musicStarted = true;
+	clickToStart.style.opacity = '0';
+	setTimeout(() => clickToStart.style.display = 'none', 600);
+	// Launch confetti burst!
+	createConfetti(true);
+	music.muted = false;
+	music.play().then(() => { isPlaying = true; musicIcon.textContent = '🔊'; }).catch(() => {});
+}
+
+clickToStart.addEventListener('click', startExperience);
+clickToStart.addEventListener('touchstart', startExperience);
+document.addEventListener('keydown', e => { if (!musicStarted) startExperience(e); }, { once: true });
+
+// Music toggle
+document.getElementById('musicControl').addEventListener('click', e => {
+	e.stopPropagation();
+	if (!musicStarted) { startExperience(e); return; }
+	if (isPlaying) {
+		music.pause(); musicIcon.textContent = '🔇'; isPlaying = false;
+	} else {
+		music.play().then(() => { musicIcon.textContent = '🔊'; isPlaying = true; }).catch(() => {});
+	}
+});
+
+// ─── SLIDER ───
+document.addEventListener('DOMContentLoaded', function() {
+	let currentSlide = 0;
+	const slides = document.querySelectorAll('.photo-slide');
+	const totalSlides = slides.length;
+	const dotsContainer = document.getElementById('sliderDots');
+	const slideCounter = document.getElementById('slideCounter');
+
+	for (let i = 0; i < totalSlides; i++) {
+		const dot = document.createElement('div');
+		dot.className = 'dot' + (i === 0 ? ' active' : '');
+		dot.onclick = () => goToSlide(i);
+		dotsContainer.appendChild(dot);
+	}
+	if (slideCounter) slideCounter.textContent = `1 / ${totalSlides}`;
+
+	function moveSlide(dir) {
+		currentSlide = (currentSlide + dir + totalSlides) % totalSlides;
+		updateSlider();
+	}
+	function goToSlide(i) { currentSlide = i; updateSlider(); }
+	function updateSlider() {
+		document.querySelector('.photo-track').style.transform = `translateX(-${currentSlide * 100}%)`;
+		document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+		if (slideCounter) slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+	}
+
+	let autoSlide = setInterval(() => moveSlide(1), 4500);
+	const sliderEl = document.querySelector('.photo-slider');
+	if (sliderEl) {
+		sliderEl.addEventListener('mouseenter', () => clearInterval(autoSlide));
+		sliderEl.addEventListener('mouseleave', () => { autoSlide = setInterval(() => moveSlide(1), 4500); });
+	}
+	window.moveSlide = moveSlide;
+	window.goToSlide = goToSlide;
+
+	// Touch swipe
+	let touchStartX = 0;
+	if (sliderEl) {
+		sliderEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+		sliderEl.addEventListener('touchend', e => {
+			const diff = touchStartX - e.changedTouches[0].clientX;
+			if (Math.abs(diff) > 40) moveSlide(diff > 0 ? 1 : -1);
+		});
+	}
+
+	// ─── LIGHTBOX ───
+	const lightboxImages = [
+		{src:'assets/23.jpeg',caption:'My beautiful love'},{src:'assets/8.jpeg',caption:'Pure joy'},
+		{src:'assets/31.jpeg',caption:'Endless love'},{src:'assets/14.jpeg',caption:'Together forever'},
+		{src:'assets/42.jpeg',caption:'Forever and always'},{src:'assets/5.jpeg',caption:'Precious moments'},
+		{src:'assets/27.jpeg',caption:'Love of my life'},{src:'assets/19.jpeg',caption:'Perfect together'},
+		{src:'assets/11.jpeg',caption:'My soulmate'},{src:'assets/38.jpeg',caption:'You complete me'},
+		{src:'assets/3.jpeg',caption:'Beautiful memories'},{src:'assets/29.jpeg',caption:'My queen'},
+		{src:'assets/16.jpeg',caption:'Forever yours'},{src:'assets/7.jpeg',caption:'Pure happiness'},
+		{src:'assets/33.jpeg',caption:'Cherished memories'},{src:'assets/21.jpeg',caption:'My treasure'},
+		{src:'assets/44.jpeg',caption:'My angel'},{src:'assets/10.jpeg',caption:'Sweet love'},
+		{src:'assets/35.jpeg',caption:'My sunshine'},{src:'assets/2.jpeg',caption:'Beautiful soul'},
+		{src:'assets/25.jpeg',caption:'Forever love'},{src:'assets/13.jpeg',caption:'My heartbeat'},
+		{src:'assets/39.jpeg',caption:'Amazing moments'},{src:'assets/6.jpeg',caption:'My everything'},
+		{src:'assets/28.jpeg',caption:'Love eternal'},{src:'assets/17.jpeg',caption:'My beloved'},
+		{src:'assets/40.jpeg',caption:'Magical moments'},{src:'assets/1.jpeg',caption:'Beautiful you'},
+		{src:'assets/32.jpeg',caption:'My princess'},{src:'assets/9.jpeg',caption:'Wonderful you'},
+		{src:'assets/24.jpeg',caption:'Sweet memories'},{src:'assets/46.jpeg',caption:'Love divine'},
+		{src:'assets/15.jpeg',caption:'My world'},{src:'assets/37.jpeg',caption:'Pure love'},
+		{src:'assets/4.jpeg',caption:'Lovely you'},{src:'assets/22.jpeg',caption:'My dream'},
+		{src:'assets/30.jpeg',caption:'Beautiful love'},{src:'assets/12.jpeg',caption:'My star'},
+		{src:'assets/41.jpeg',caption:'Eternal love'},{src:'assets/20.jpeg',caption:'My happiness'},
+		{src:'assets/34.jpeg',caption:'Sweet love'},{src:'assets/26.jpeg',caption:'My blessing'},
+		{src:'assets/18.jpeg',caption:'True love'},{src:'assets/36.jpeg',caption:'My joy'},
+		{src:'assets/43.jpeg',caption:'Forever together'},{src:'assets/47.jpeg',caption:'Always yours'}
+	];
+	let currentLightboxIndex = 0;
+
+	function openLightbox(i) {
+		currentLightboxIndex = i;
+		document.getElementById('lightboxImage').src = lightboxImages[i].src;
+		document.getElementById('lightboxCaption').textContent = lightboxImages[i].caption;
+		document.getElementById('lightbox').classList.add('active');
+		document.body.style.overflow = 'hidden';
+	}
+	function closeLightbox() {
+		document.getElementById('lightbox').classList.remove('active');
+		document.body.style.overflow = '';
+	}
+	function navigateLightbox(dir) {
+		currentLightboxIndex = (currentLightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+		document.getElementById('lightboxImage').src = lightboxImages[currentLightboxIndex].src;
+		document.getElementById('lightboxCaption').textContent = lightboxImages[currentLightboxIndex].caption;
+	}
+
+	window.openLightbox = openLightbox;
+	window.closeLightbox = closeLightbox;
+	window.navigateLightbox = navigateLightbox;
+
+	document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLightbox(); });
+	document.addEventListener('keydown', e => {
+		if (!document.getElementById('lightbox').classList.contains('active')) return;
+		if (e.key === 'Escape') closeLightbox();
+		if (e.key === 'ArrowLeft') navigateLightbox(-1);
+		if (e.key === 'ArrowRight') navigateLightbox(1);
+	});
+
+	// ─── SCROLL REVEAL ───
+	const observer = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('visible');
+				observer.unobserve(entry.target);
+			}
+		});
+	}, { threshold: 0.1 });
+	document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+});
+
+// ─── LOVE NOTES ───
+const loveNotes = [
+	"Every morning I wake up grateful that you exist in this world — and even more grateful that you chose me.",
+	"You are the reason I believe in magic. You are the magic.",
+	"In all my lives, across all time, I would find you and fall in love with you. Again and again.",
+	"Your laugh is my favorite song, and I want to hear it every single day for the rest of my life.",
+	"There is no version of happiness that doesn't have you in it.",
+	"You make the ordinary extraordinary just by being in the room.",
+	"Loving you has been the greatest adventure, the sweetest surprise, and the best decision of my life.",
+	"I look at you and see my home, my future, and my entire heart.",
+	"You didn't just walk into my life — you lit it up completely.",
+	"Growing old with you isn't something I'm resigned to — it's the thing I look forward to most."
+];
+let noteIndex = 0;
+function revealNewNote() {
+	const el = document.getElementById('loveNoteText');
+	el.style.opacity = 0;
+	setTimeout(() => {
+		noteIndex = (noteIndex + 1) % loveNotes.length;
+		el.textContent = loveNotes[noteIndex];
+		el.style.opacity = 1;
+	}, 500);
+}
+window.revealNewNote = revealNewNote;
+</script>
 </body>
 </html>
